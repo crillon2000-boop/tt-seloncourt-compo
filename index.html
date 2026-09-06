@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TT Seloncourt — Compositions d'équipes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0a4a9e; --navy-d:#07306a; --navy-l:#e8f0fb; --navy-2:#1461c7;
+  --ink:#101828; --muted:#667085; --line:#e2e6ee; --bg:#eef2f9; --card:#fff;
+  --ok:#0f7a4d; --ok-bg:#e6f5ee; --warn:#b45309; --warn-bg:#fdf3e3; --bad:#b42318; --bad-bg:#fdeceb;
+  --r:14px; --r-lg:18px;
+  --sh-1:0 1px 2px rgba(16,24,40,.06);
+  --sh-2:0 4px 14px rgba(16,24,40,.08);
+  --sh-3:0 10px 30px rgba(16,24,40,.14);
+  --tr:.16s cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  background:
+    radial-gradient(1100px 420px at 12% -10%, #eaf1fc 0%, rgba(234,241,252,0) 60%),
+    var(--bg);
+  color:var(--ink); font-size:15px; line-height:1.45;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+button,select,input{font-family:inherit;font-size:inherit}
+button{cursor:pointer}
+a{color:var(--navy)}
+:focus-visible{outline:2px solid var(--navy-2);outline-offset:2px;border-radius:6px}
+::-webkit-scrollbar{height:9px;width:9px}
+::-webkit-scrollbar-thumb{background:#c7d2e2;border-radius:20px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- Chrome ---------- */
+.topbar{background:linear-gradient(180deg,var(--navy-d),#082f6b);color:#fff;position:sticky;top:0;z-index:60;box-shadow:0 2px 10px rgba(7,48,106,.25)}
+.topbar-in{max-width:1320px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand img{width:38px;height:38px;border-radius:50%;background:#fff;object-fit:contain;flex:none}
+.brand b{font-size:15px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
+.brand span{display:block;font-size:11px;color:#9dbde8;font-weight:500}
+.topbar .spacer{flex:1}
+.ctl{display:flex;align-items:center;gap:6px;font-size:12px;color:#b9d0ee}
+.ctl select,.ctl input{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:5px 8px;font-size:12px;font-weight:600}
+.ctl select option{color:#111}
+.save-dot{font-size:11px;color:#9dbde8;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.save-dot i{width:7px;height:7px;border-radius:50%;background:#3ddc97;display:inline-block;flex:none}
+.save-dot.pending i{background:#f2b544;animation:pulse 1s infinite}
+.save-dot.offline i{background:#f97066}
+.save-dot.loading i{background:#8ab4f0;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.lockbtn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:8px;padding:5px 11px;font-size:12px;font-weight:700}
+.lockbtn:hover{background:rgba(255,255,255,.24)}
+.robanner{background:#fdf3e3;border:1px solid #f4dcb0;color:#8a5a08;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.robanner button{margin-left:auto}
+body.ro .hide-ro{display:none !important}
+
+nav.tabs{background:var(--navy);position:sticky;top:0;z-index:55;box-shadow:0 2px 8px rgba(10,74,158,.18)}
+nav.tabs .in{max-width:1320px;margin:0 auto;padding:0 10px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs .in::-webkit-scrollbar{display:none}
+nav.tabs button{background:none;border:0;color:#b9d0ee;padding:12px 15px;font-weight:700;font-size:13.5px;border-bottom:3px solid transparent;white-space:nowrap;transition:color var(--tr),border-color var(--tr);-webkit-tap-highlight-color:transparent}
+nav.tabs button:hover{color:#fff}
+nav.tabs button.on{color:#fff;border-bottom-color:#fff}
+
+main{max-width:1320px;margin:0 auto;padding:18px 16px 80px}
+.view{display:none}
+.view.on{display:block}
+
+h2{font-size:19px;margin:0 0 2px;letter-spacing:-.3px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+
+/* ---------- Buttons ---------- */
+.btn{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;color:var(--ink);box-shadow:var(--sh-1);transition:border-color var(--tr),background var(--tr),transform var(--tr),box-shadow var(--tr);-webkit-tap-highlight-color:transparent}
+.btn:hover{border-color:#c3cbd9;box-shadow:var(--sh-2)}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:linear-gradient(180deg,var(--navy-2),var(--navy));border-color:var(--navy);color:#fff}
+.btn.pri:hover{background:var(--navy-d);border-color:var(--navy-d)}
+.btn.gho{background:transparent;border-color:transparent;color:var(--muted);box-shadow:none}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:8px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+
+/* ---------- Journée picker ---------- */
+.jdays{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.jday{background:#fff;border:1px solid var(--line);border-radius:11px;padding:7px 13px;font-weight:700;font-size:13px;min-width:64px;text-align:center;line-height:1.2;transition:background var(--tr),border-color var(--tr),color var(--tr),transform var(--tr);box-shadow:var(--sh-1)}
+.jday:hover{transform:translateY(-1px);box-shadow:var(--sh-2)}
+.jday small{display:block;font-weight:500;font-size:10.5px;color:var(--muted)}
+.jday.on{background:linear-gradient(180deg,var(--navy-2),var(--navy));border-color:var(--navy);color:#fff}
+.jday.on small{color:#b9d0ee}
+.jday.done{border-color:#bcd3f0}
+
+/* ---------- Cards ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.team{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh-1);transition:box-shadow var(--tr),transform var(--tr)}
+.team:hover{box-shadow:var(--sh-2)}
+.team.ko{border-color:#f0c9c5}
+.team-h{padding:11px 13px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:8px}
+.team-h .n{width:30px;height:30px;border-radius:9px;background:var(--navy-l);color:var(--navy);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+.team-h .t{flex:1;min-width:0}
+.team-h .t b{display:block;font-size:14.5px;letter-spacing:-.2px}
+.team-h .t span{display:block;font-size:11.5px;color:var(--muted)}
+.team-h .t span.mline{font-size:12.5px;color:var(--ink);font-weight:700;margin-top:1px}
+.pill{font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.ko{background:var(--bad-bg);color:var(--bad)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.slots{padding:8px 10px 10px;display:flex;flex-direction:column;gap:6px}
+.slot{display:flex;align-items:center;gap:7px}
+.slot .idx{width:19px;text-align:center;font-size:11px;font-weight:800;color:var(--muted);flex:none}
+.slot select{flex:1;min-width:0;border:1px solid var(--line);border-radius:9px;padding:7px 8px;background:#fff;font-weight:600;font-size:13px;color:var(--ink)}
+.slot select.empty{color:#98a2b3;font-weight:500;border-style:dashed}
+.slot .pts{font-size:11.5px;color:var(--muted);font-weight:700;width:38px;text-align:right;flex:none}
+.slot-del{flex:none;width:26px;height:26px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:13px;line-height:1;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;padding:0}
+.slot-del:hover:not(:disabled){background:var(--bad-bg);border-color:#f0c9c5;color:var(--bad)}
+.slot-del:disabled{opacity:.35;cursor:not-allowed}
+.team-f{padding:0 12px 11px;display:flex;flex-direction:column;gap:5px}
+.note{font-size:11.5px;border-radius:8px;padding:6px 8px;line-height:1.35}
+.note.bad{background:var(--bad-bg);color:var(--bad)}
+.note.warn{background:var(--warn-bg);color:var(--warn)}
+.note.info{background:var(--navy-l);color:var(--navy-d)}
+.team-meta{padding:7px 13px;border-top:1px solid var(--line);background:#fafbfd;font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between}
+
+/* ---------- Tables ---------- */
+.tw{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:auto;max-width:100%;box-shadow:var(--sh-1);-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:#fafbfd;font-size:11px;text-transform:none;color:var(--muted);font-weight:800;position:sticky;top:0;z-index:2}
+tbody tr:hover{background:#fbfcfe}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+.stick{position:sticky;left:0;background:#fff;z-index:1;box-shadow:1px 0 0 var(--line)}
+tbody tr:hover .stick{background:#fbfcfe}
+th.stick{background:#fafbfd;z-index:3}
+.grp td{background:var(--navy-l);font-weight:800;color:var(--navy-d);font-size:12px}
+tbody tr.grp:hover td{background:var(--navy-l)}
+.chk{width:17px;height:17px;accent-color:var(--navy);cursor:pointer}
+.daychecks{display:flex;gap:5px;justify-content:center;align-items:center}
+.daychecks label{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;font-weight:800;letter-spacing:.02em;color:var(--muted);cursor:pointer;user-select:none;padding:2px 1px;border-radius:6px;transition:background .15s,color .15s}
+.daychecks label:has(input:checked){color:var(--navy);background:var(--navy-l)}
+.daychecks input{width:15px;height:15px;accent-color:var(--navy);cursor:pointer;margin:0}
+body.ro .daychecks label{cursor:default}
+.cell{display:inline-block;min-width:34px;padding:2px 6px;border-radius:7px;font-weight:800;font-size:12px}
+.cell.ok{background:var(--ok-bg);color:var(--ok)}
+.cell.ko{background:var(--bad-bg);color:var(--bad)}
+.cell.mid{background:var(--warn-bg);color:var(--warn)}
+.cell.non{background:#f2f4f7;color:#98a2b3}
+.tag{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:700;background:#f2f4f7;color:var(--muted)}
+.tag.f{background:#fdeaf3;color:#a33a76}
+.tag.j{background:#eaf3ff;color:#1f5fb0}
+.pchip{display:inline-block;padding:2px 8px;border-radius:7px;font-weight:700;font-size:12.5px;line-height:1.4}
+.tdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;flex:none}
+.eqchip{display:inline-flex;align-items:center;padding:2px 9px 2px 7px;border-radius:20px;font-weight:800;font-size:12px}
+input.cellin{border:1px solid var(--line);border-radius:7px;padding:4px 7px;width:100%;min-width:70px}
+input.cellin:focus{outline:2px solid var(--navy-l);border-color:var(--navy)}
+
+/* ---------- Misc ---------- */
+.kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px 15px;min-width:120px;flex:1 1 120px;box-shadow:var(--sh-1)}
+.kpi b{display:block;font-size:23px;letter-spacing:-.5px}
+.kpi span{font-size:11.5px;color:var(--muted);font-weight:600}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;box-shadow:var(--sh-1)}
+.panel h3{margin:0 0 4px;font-size:15px}
+.panel p{margin:0 0 12px;color:var(--muted);font-size:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label.f{display:flex;flex-direction:column;gap:3px;font-size:11.5px;font-weight:700;color:var(--muted)}
+label.f input,label.f select{border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-weight:600;color:var(--ink);background:#fff}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+.legend b{color:var(--ink)}
+details.rules{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;margin-bottom:14px}
+details.rules summary{font-weight:800;font-size:13.5px;cursor:pointer}
+details.rules ul{margin:10px 0 0;padding-left:18px;font-size:13px;color:#344054}
+details.rules li{margin-bottom:6px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,90px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:11px;font-weight:700;font-size:13px;transition:transform .25s;z-index:200}
+#toast.on{transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;background:rgba(16,24,40,.72);display:none;align-items:center;justify-content:center;padding:16px;z-index:150}
+.modal.on{display:flex}
+.modal-in{background:#fff;border-radius:16px;max-width:min(96vw,860px);max-height:92vh;overflow:auto;padding:14px}
+.modal-in img{max-width:100%;display:block;border-radius:10px;border:1px solid var(--line)}
+.modal-act{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+@media(max-width:760px){
+  .topbar-in{padding:9px 12px;gap:10px}
+  .brand img{width:32px;height:32px}
+  .brand b{font-size:13.5px}
+  .ctl{font-size:11px}
+  .save-dot span{display:none}
+  nav.tabs button{padding:11px 12px;font-size:13px}
+}
+@media(max-width:640px){
+  main{padding:14px 10px 70px}
+  .grid{grid-template-columns:1fr}
+  .brand span{display:none}
+  h2{font-size:17px}
+  .panel{padding:13px}
+  .btn{padding:9px 12px}
+  th,td{padding:7px 8px}
+  .daychecks{gap:4px}
+  .daychecks label{font-size:9px;padding:3px 1px}
+  .daychecks input{width:16px;height:16px}
+  .kpi{min-width:100px;padding:10px 12px}
+  .kpi b{font-size:19px}
+  .modal-in{padding:10px}
+}
+@media(hover:none){
+  .btn,.jday,.team{transition:none}
+  .btn:hover,.jday:hover,.team:hover{box-shadow:var(--sh-1);transform:none}
+}
+@media print{nav.tabs,.topbar,.bar,.jdays{display:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <img id="brandLogo" alt="TT Seloncourt">
+      <div><b>Compositions d'équipes</b><span>Tennis de Table Seloncourt</span></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="ctl">Saison <input id="inSaison" size="9"></div>
+    <div class="ctl">Phase
+      <select id="inPhase"><option value="1">Phase 1</option><option value="2">Phase 2</option></select>
+    </div>
+    <div class="save-dot" id="saveDot"><i></i><span>Connexion…</span></div>
+    <button class="lockbtn" id="btnLock">Déverrouiller</button>
+  </div>
+</div>
+
+
+<nav class="tabs"><div class="in" id="tabs"></div></nav>
+
+<main>
+<div class="robanner" id="roBanner" style="display:none">
+  <span>Lecture seule. Vous pouvez consulter les compositions et exporter l'image ; le code du comité est nécessaire pour modifier.</span>
+  <button class="btn sm" id="btnUnlock2">Saisir le code</button>
+</div>
+
+<!-- ============ COMPOSITIONS ============ -->
+<section class="view on" id="v-compo">
+  <h2>Compositions de la journée</h2>
+  <p class="sub" id="compoSub"></p>
+  <div class="jdays" id="jdays"></div>
+  <div class="bar">
+    <button class="btn pri" id="btnExport">Exporter l'image WhatsApp</button>
+    <button class="btn hide-ro" id="btnAuto" data-mut="1">Remplir automatiquement</button>
+    <button class="btn hide-ro" id="btnClear" data-mut="1">Vider la journée</button>
+    <button class="btn hide-ro" id="btnCopyPrev" data-mut="1">Reprendre la journée précédente</button>
+    <span class="spacer" style="flex:1"></span>
+    <span id="compoStatus"></span>
+  </div>
+  <div class="grid" id="teamGrid"></div>
+  <div class="legend">
+    <span><b>Grisé</b> = joueur indisponible pour cette équipe</span>
+    <span><b>Ordre</b> = classement décroissant, comme sur la feuille de rencontre</span>
+    <span><b>Couleur</b> = équipe de rattachement du joueur (chaque équipe a sa couleur)</span>
+  </div>
+</section>
+
+<!-- ============ ABSENCES ============ -->
+<section class="view" id="v-abs">
+  <h2>Absences prévisionnelles</h2>
+  <p class="sub">Pour chaque journée, cochez le ou les jours où le joueur est absent (vendredi et/ou samedi et/ou dimanche). Les 3 jours cochés = absent tout le week-end ; un seul jour coché = il reste sélectionnable pour une équipe qui joue un autre jour de la même journée.</p>
+  <div class="bar">
+    <label class="f">Filtrer<select id="absFilter"></select></label>
+    <label class="f">Rechercher<input id="absSearch" placeholder="Nom du joueur"></label>
+    <button class="btn hide-ro" id="btnAbsClear" data-mut="1">Tout décocher</button>
+  </div>
+  <div class="tw"><table id="absTable"></table></div>
+</section>
+
+<!-- ============ RECAP ============ -->
+<section class="view" id="v-recap">
+  <h2>Récapitulatif de la phase</h2>
+  <p class="sub">État de remplissage des 11 équipes sur les 7 journées, et situation de brûlage de chaque joueur.</p>
+  <div class="kpis" id="recapKpis"></div>
+  <div class="panel" style="padding:0;overflow:hidden">
+    <div class="tw" style="border:0"><table id="recapTable"></table></div>
+  </div>
+  <h2 style="margin-top:22px">Situation des joueurs</h2>
+  <p class="sub">Nombre de rencontres jouées sur la phase et équipe la plus basse encore autorisée (règle du brûlage).</p>
+  <div class="bar">
+    <label class="f">Afficher<select id="recapJoueurFilter">
+      <option value="played">Joueurs alignés au moins une fois</option>
+      <option value="all">Tous les joueurs</option>
+      <option value="burn">Joueurs brûlés uniquement</option>
+    </select></label>
+  </div>
+  <div class="tw"><table id="playersRecap"></table></div>
+</section>
+
+<!-- ============ CALENDRIER ============ -->
+<section class="view" id="v-cal">
+  <h2>Calendrier de la phase</h2>
+  <p class="sub">Dates, adversaires et lieux des 7 journées. Ces informations alimentent les cartes d'équipe et l'image envoyée sur WhatsApp.</p>
+  <div class="tw" style="margin-bottom:18px"><table id="calTable"></table></div>
+  <div class="panel">
+    <h3>Modifier une équipe</h3>
+    <p>Les équipes 9, 10 et 11 sont à compléter : leur calendrier ne figurait pas dans le document de la ligue.</p>
+    <div class="bar"><label class="f">Équipe<select id="calTeam" class="cellin" style="min-width:230px"></select></label></div>
+    <div class="tw"><table id="calEdit"></table></div>
+  </div>
+</section>
+
+<!-- ============ JOUEURS ============ -->
+<section class="view" id="v-joueurs">
+  <h2>Joueurs</h2>
+  <p class="sub">Liste des licenciés, points officiels et équipe de rattachement. Le rattachement sert au remplissage automatique et au tri de l'affichage, il n'interdit rien.</p>
+  <div class="bar">
+    <button class="btn pri hide-ro" id="btnAddPlayer" data-mut="1">Ajouter un joueur</button>
+    <label class="f">Rechercher<input id="joueurSearch" placeholder="Nom"></label>
+    <label class="f">Statut<select id="joueurStatut">
+      <option value="all">Tous</option><option value="actif">Engagés</option><option value="inactif">Non engagés</option>
+    </select></label>
+    <span style="flex:1"></span>
+    <span class="sub" style="margin:0" id="joueursCount"></span>
+  </div>
+  <div class="tw"><table id="joueursTable"></table></div>
+</section>
+
+<!-- ============ REGLAGES ============ -->
+<section class="view" id="v-reglages">
+  <h2>Réglages</h2>
+  <p class="sub">Équipes, dates des journées, sauvegarde du fichier.</p>
+
+  <div class="panel">
+    <h3>Équipes engagées</h3>
+    <p>Le numéro d'équipe détermine la hiérarchie du brûlage : plus il est bas, plus la division est haute. Le nombre de joueurs correspond à la formule de la division (le plus souvent 4, parfois 3 dans les divisions les plus basses — à vérifier chaque saison). La poule ne sert qu'à détecter deux équipes du club dans la même poule.</p>
+    <div class="bar"><button class="btn pri hide-ro" id="btnAddTeam" data-mut="1">Ajouter une équipe</button></div>
+    <div class="tw"><table id="teamsTable"></table></div>
+  </div>
+
+  <div class="panel">
+    <h3>Sauvegarde</h3>
+    <p>Les données sont synchronisées en ligne : elles se retrouvent sur tous vos appareils, et une copie locale prend le relais si le réseau tombe. L'export JSON reste utile pour archiver une phase terminée ou garder une trace hors ligne.</p>
+    <div class="row">
+      <button class="btn pri" id="btnSaveJson">Exporter la sauvegarde (JSON)</button>
+      <button class="btn hide-ro" id="btnLoadJson" data-mut="1">Importer une sauvegarde</button>
+      <input type="file" id="fileJson" accept="application/json" style="display:none">
+      <button class="btn hide-ro" id="btnResetPhase" data-mut="1">Vider la phase en cours</button>
+      <button class="btn gho hide-ro" id="btnResetAll" data-mut="1">Réinitialiser tout l'outil</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REGLES ============ -->
+<section class="view" id="v-regles">
+  <h2>Règles appliquées par l'outil</h2>
+  <p class="sub">Source : règlements sportifs fédéraux FFTT, article II.112 (brûlage). Les règlements de la Ligue Grand Est peuvent préciser certains points, à vérifier chaque saison.</p>
+  <div class="panel">
+    <h3>1. Deux rencontres et le joueur est fixé</h3>
+    <p style="margin:0">Un joueur ayant disputé deux rencontres d'une même phase, consécutives ou non, au titre d'une même équipe ou d'équipes différentes, ne peut plus jouer dans une équipe dont le numéro est supérieur à ces équipes. Exemple : deux rencontres en équipe 2, il ne peut plus jouer en 3 ni en 4. Une rencontre en équipe 1 puis une en équipe 2 : il est fixé au niveau de l'équipe 2. L'outil calcule ce niveau comme le deuxième plus petit numéro d'équipe parmi les rencontres déjà jouées, et le recalcule après chaque journée.</p>
+  </div>
+  <div class="panel">
+    <h3>2. Une seule rencontre par journée</h3>
+    <p style="margin:0">Sur une même journée de championnat, un joueur ne peut figurer que sur une seule feuille de rencontre. L'outil bloque le doublon et signale l'équipe concernée.</p>
+  </div>
+  <div class="panel">
+    <h3>3. La règle de la deuxième journée</h3>
+    <p style="margin:0">Lors de la deuxième journée d'une phase, une équipe de trois ou quatre joueurs ne peut pas comporter plus d'un joueur ayant disputé la première journée dans une équipe de numéro inférieur (plus de deux joueurs pour une formule à cinq ou six joueurs). L'outil compte ces joueurs et alerte au niveau de l'équipe.</p>
+  </div>
+  <div class="panel">
+    <h3>4. Deux équipes du club dans la même poule</h3>
+    <p style="margin:0">Lorsque deux équipes de l'association évoluent dans la même poule, un joueur ayant disputé une rencontre avec l'une ne peut plus jouer avec l'autre tant qu'elles y sont. Renseignez la poule dans les réglages pour activer ce contrôle.</p>
+  </div>
+  <div class="panel">
+    <h3>5. Remise à zéro</h3>
+    <p style="margin:0">Le brûlage est remis à zéro à la fin de chaque phase. Basculez simplement le sélecteur de phase en haut de l'écran : les compositions et les absences de la phase 2 sont indépendantes de celles de la phase 1.</p>
+  </div>
+  <div class="panel">
+    <h3>6. Classement minimum par division (règle du club)</h3>
+    <p style="margin:0">En Prénationale, seuls les joueurs à partir de 1300 points sont alignables ; en Régionale 1, à partir de 1100 points. Ce n'est pas une règle FFTT mais une consigne interne au club : l'outil l'applique à toute équipe dont l'intitulé de division commence par « Prénationale » ou « Régionale 1 » (modifiable dans Réglages → Équipes engagées).</p>
+  </div>
+  <div class="panel">
+    <h3>Ce que l'outil ne contrôle pas</h3>
+    <p style="margin:0">Le nombre de joueurs mutés autorisés par équipe, les cas d'équipe exempte ou forfait, et les règles propres à la Ligue Grand Est. Ces points restent à votre appréciation.</p>
+  </div>
+</section>
+
+</main>
+
+<div id="toast"></div>
+<div class="modal" id="modal"><div class="modal-in">
+  <img id="modalImg" alt="Compositions">
+  <div class="modal-act">
+    <button class="btn" id="btnModalClose">Fermer</button>
+    <button class="btn pri" id="btnModalDl">Télécharger le PNG</button>
+  </div>
+</div></div>
+<script>
+const SEED = {"saison":"2026-2027","equipes":[{"num":1,"div":"Prénationale — Poule 3","jour":"Samedi","heure":"","salle":"Rue Arthur Motteler, 25230 Seloncourt","nb":4,"poule":"","effectif":["bourquard-andy","girardot-florian","romain-antoine","crevoisier-francois"],"cal":[{"j":1,"date":"2026-09-19","dom":true,"adv":"AMNEVILLE TT 1","jour":"Samedi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":2,"date":"2026-10-03","dom":false,"adv":"CHALONS EN CHAMPAGNE TT 1","jour":"Samedi","heure":"","lieu":""},{"j":3,"date":"2026-10-17","dom":true,"adv":"JOIGNY US 1","jour":"Samedi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":4,"date":"2026-11-07","dom":false,"adv":"MOUSSEY CS 1","jour":"Samedi","heure":"","lieu":""},{"j":5,"date":"2026-11-21","dom":true,"adv":"SARREBOURG TT 1","jour":"Samedi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":6,"date":"2026-12-05","dom":false,"adv":"HAGUENAU WISSEMBOURG TT4","jour":"Samedi","heure":"","lieu":""},{"j":7,"date":"2026-12-12","dom":true,"adv":"SAINT AVOLD CTT 1","jour":"Samedi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"}]},{"num":2,"div":"Régionale 1 — Poule 1","jour":"Samedi","heure":"","salle":"Rue Arthur Motteler, 25230 Seloncourt","nb":4,"poule":"","effectif":["hayotte-florent","bailleul-gaetan","beley-pascal","gros-jean-baptiste"],"cal":[{"j":1,"date":"2026-09-19","dom":false,"adv":"PTT DOLE FOUCH. 1","jour":"Samedi","heure":"","lieu":""},{"j":2,"date":"2026-10-03","dom":true,"adv":"ROCHE-BESANCON 3","jour":"Samedi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":3,"date":"2026-10-17","dom":false,"adv":"EM VESOUL 2","jour":"Samedi","heure":"","lieu":""},{"j":4,"date":"2026-11-07","dom":true,"adv":"ROCHE-BESANCON 4","jour":"Samedi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":5,"date":"2026-11-21","dom":false,"adv":"US TORPES 1","jour":"Samedi","heure":"","lieu":""},{"j":6,"date":"2026-12-05","dom":false,"adv":"CC DANJOUTIN 1","jour":"Samedi","heure":"","lieu":""},{"j":7,"date":"2026-12-12","dom":true,"adv":"VAUVILLERS /RADDON 1","jour":"Samedi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"}]},{"num":3,"div":"Régionale 2 — Poule 1","jour":"Dimanche","heure":"","salle":"Rue Arthur Motteler, 25230 Seloncourt","nb":4,"poule":"","effectif":["baradel-philippe","regazzoni-gilles","moreau-remy","lavergne-eric","kriegel-lars","girard-francois"],"cal":[{"j":1,"date":"2026-09-20","dom":false,"adv":"ROCHE-BESANCON 5","jour":"Dimanche","heure":"","lieu":""},{"j":2,"date":"2026-10-04","dom":true,"adv":"POUILLEY VIGNES 1","jour":"Dimanche","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":3,"date":"2026-10-18","dom":false,"adv":"FR VEZELOIS 1","jour":"Dimanche","heure":"","lieu":""},{"j":4,"date":"2026-11-08","dom":true,"adv":"PPC BAVANS 1","jour":"Dimanche","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":5,"date":"2026-11-22","dom":false,"adv":"CTT VALDAHON 1","jour":"Dimanche","heure":"","lieu":""},{"j":6,"date":"2026-12-06","dom":true,"adv":"BAUME LES DAMES 1","jour":"Dimanche","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":7,"date":"2026-12-13","dom":false,"adv":"VAUVILLERS TT 3","jour":"Dimanche","heure":"","lieu":""}]},{"num":4,"div":"Régionale 4 — Poule 5","jour":"Dimanche","heure":"","salle":"Rue Arthur Motteler, 25230 Seloncourt","nb":4,"poule":"","effectif":["doriot-david","baradel-jules","chatelain-alex","voillot-dominique","fourcroy-evan"],"cal":[{"j":1,"date":"2026-09-20","dom":false,"adv":"VAUVILLERS TT 4","jour":"Dimanche","heure":"","lieu":""},{"j":2,"date":"2026-10-04","dom":true,"adv":"LES AUXONS TT 3","jour":"Dimanche","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":3,"date":"2026-10-18","dom":false,"adv":"BAUME LES DAMES 2","jour":"Dimanche","heure":"","lieu":""},{"j":4,"date":"2026-11-08","dom":true,"adv":"RADDON 3","jour":"Dimanche","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":5,"date":"2026-11-22","dom":false,"adv":"BUCEY LES GY 1","jour":"Dimanche","heure":"","lieu":""},{"j":6,"date":"2026-12-06","dom":true,"adv":"ASM BELFORT TT 5","jour":"Dimanche","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":7,"date":"2026-12-13","dom":false,"adv":"ROCHE-BESANCON 9","jour":"Dimanche","heure":"","lieu":""}]},{"num":5,"div":"Départementale 1 — Poule 1","jour":"Vendredi","heure":"","salle":"Rue Arthur Motteler, 25230 Seloncourt","nb":4,"poule":"","effectif":["mossina-alan","ruffier-jean-pierre","di-pietro-francis","pequegnot-jean-noel","baradel-capucine","finet-sylvain"],"cal":[{"j":1,"date":"2026-09-18","dom":true,"adv":"CP Giromagny 2","jour":"Vendredi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":2,"date":"2026-10-02","dom":false,"adv":"Montbouton 2","jour":"Vendredi","heure":"","lieu":""},{"j":3,"date":"2026-10-16","dom":false,"adv":"CC Danjoutin 5","jour":"Vendredi","heure":"","lieu":""},{"j":4,"date":"2026-11-06","dom":true,"adv":"PPC Bavans 4","jour":"Vendredi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":5,"date":"2026-11-20","dom":false,"adv":"JA Maiche 2","jour":"Vendredi","heure":"","lieu":""},{"j":6,"date":"2026-12-04","dom":true,"adv":"PPC Fesches 1","jour":"Vendredi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":7,"date":"2026-12-11","dom":false,"adv":"TT Arbouans 2","jour":"Vendredi","heure":"","lieu":""}]},{"num":6,"div":"Départementale 5 — Poule 1","jour":"Vendredi","heure":"","salle":"Rue Arthur Motteler, 25230 Seloncourt","nb":3,"poule":"","effectif":["pelletier-jacky","arranz-gache-noa","bietry-corinne","heidet-allan","czuba-jean-christian","jordan-dominique","bourgeois-isabelle","bourgeois-pascal","castanier-timeo","meister-maxime"],"cal":[{"j":1,"date":"2026-09-18","dom":true,"adv":"Voujeaucourt 3","jour":"Vendredi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":2,"date":"2026-10-02","dom":false,"adv":"EXEMPT","jour":"Vendredi","heure":"","lieu":""},{"j":3,"date":"2026-10-16","dom":false,"adv":"ASM Belfort TT 7","jour":"Vendredi","heure":"","lieu":""},{"j":4,"date":"2026-11-06","dom":true,"adv":"FR Vezelois 7","jour":"Vendredi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":5,"date":"2026-11-20","dom":false,"adv":"TT Damprichard 3","jour":"Vendredi","heure":"","lieu":""},{"j":6,"date":"2026-12-04","dom":true,"adv":"S Chatenois 8","jour":"Vendredi","heure":"","lieu":"Rue Arthur Motteler, 25230 Seloncourt"},{"j":7,"date":"2026-12-11","dom":false,"adv":"ASM Belfort TT 8","jour":"Vendredi","heure":"","lieu":""}]}],"joueurs":[{"id":"bourquard-andy","nom":"BOURQUARD Andy","pts":1804,"sexe":"M","cat":"","equipe":1,"actif":true,"note":""},{"id":"girardot-florian","nom":"GIRARDOT Florian","pts":1781,"sexe":"M","cat":"","equipe":1,"actif":true,"note":""},{"id":"romain-antoine","nom":"ROMAIN Antoine","pts":1736,"sexe":"M","cat":"","equipe":1,"actif":true,"note":""},{"id":"crevoisier-francois","nom":"CREVOISIER François","pts":1705,"sexe":"M","cat":"","equipe":1,"actif":true,"note":""},{"id":"hayotte-florent","nom":"HAYOTTE Florent","pts":1714,"sexe":"M","cat":"","equipe":2,"actif":true,"note":""},{"id":"bailleul-gaetan","nom":"BAILLEUL Gaëtan","pts":1673,"sexe":"M","cat":"","equipe":2,"actif":true,"note":""},{"id":"beley-pascal","nom":"BELEY Pascal","pts":1534,"sexe":"M","cat":"","equipe":2,"actif":true,"note":""},{"id":"gros-jean-baptiste","nom":"GROS Jean baptiste","pts":1521,"sexe":"M","cat":"","equipe":2,"actif":true,"note":""},{"id":"baradel-philippe","nom":"BARADEL Philippe","pts":1545,"sexe":"M","cat":"","equipe":3,"actif":true,"note":""},{"id":"regazzoni-gilles","nom":"REGAZZONI Gilles","pts":1454,"sexe":"M","cat":"","equipe":3,"actif":true,"note":""},{"id":"moreau-remy","nom":"MOREAU Rémy","pts":1378,"sexe":"M","cat":"","equipe":3,"actif":true,"note":""},{"id":"lavergne-eric","nom":"LAVERGNE Eric","pts":1372,"sexe":"M","cat":"","equipe":3,"actif":true,"note":""},{"id":"kriegel-lars","nom":"KRIEGEL Lars","pts":1356,"sexe":"M","cat":"","equipe":3,"actif":true,"note":""},{"id":"girard-francois","nom":"GIRARD François","pts":1236,"sexe":"M","cat":"","equipe":3,"actif":true,"note":""},{"id":"doriot-david","nom":"DORIOT David","pts":1078,"sexe":"M","cat":"","equipe":4,"actif":true,"note":""},{"id":"baradel-jules","nom":"BARADEL Jules","pts":1052,"sexe":"M","cat":"","equipe":4,"actif":true,"note":""},{"id":"chatelain-alex","nom":"CHATELAIN Alex","pts":997,"sexe":"M","cat":"","equipe":4,"actif":true,"note":""},{"id":"voillot-dominique","nom":"VOILLOT Dominique","pts":976,"sexe":"M","cat":"","equipe":4,"actif":true,"note":""},{"id":"fourcroy-evan","nom":"FOURCROY Evan","pts":836,"sexe":"M","cat":"","equipe":4,"actif":true,"note":""},{"id":"mossina-alan","nom":"MOSSINA Alan","pts":1103,"sexe":"M","cat":"","equipe":5,"actif":true,"note":""},{"id":"ruffier-jean-pierre","nom":"RUFFIER Jean Pierre","pts":884,"sexe":"M","cat":"","equipe":5,"actif":true,"note":""},{"id":"di-pietro-francis","nom":"DI PIETRO Francis","pts":852,"sexe":"M","cat":"","equipe":5,"actif":true,"note":""},{"id":"pequegnot-jean-noel","nom":"PEQUEGNOT Jean Noël","pts":851,"sexe":"M","cat":"","equipe":5,"actif":true,"note":""},{"id":"baradel-capucine","nom":"BARADEL Capucine","pts":756,"sexe":"F","cat":"","equipe":5,"actif":true,"note":""},{"id":"finet-sylvain","nom":"FINET Sylvain","pts":688,"sexe":"M","cat":"","equipe":5,"actif":true,"note":""},{"id":"pelletier-jacky","nom":"PELLETIER Jacky","pts":686,"sexe":"M","cat":"","equipe":6,"actif":true,"note":""},{"id":"arranz-gache-noa","nom":"ARRANZ GACHE Noa","pts":541,"sexe":"M","cat":"","equipe":6,"actif":true,"note":""},{"id":"bietry-corinne","nom":"BIETRY Corinne","pts":500,"sexe":"F","cat":"","equipe":6,"actif":true,"note":""},{"id":"heidet-allan","nom":"HEIDET Allan","pts":500,"sexe":"M","cat":"","equipe":6,"actif":true,"note":""},{"id":"czuba-jean-christian","nom":"CZUBA Jean Christian","pts":500,"sexe":"M","cat":"","equipe":6,"actif":true,"note":"capitaine"},{"id":"chevassus-emilien","nom":"CHEVASSUS Emilien","pts":500,"sexe":"M","cat":"","equipe":0,"actif":false,"note":"Pause (à confirmer)"},{"id":"jordan-dominique","nom":"JORDAN Dominique","pts":500,"sexe":"M","cat":"","equipe":6,"actif":true,"note":""},{"id":"bourgeois-isabelle","nom":"BOURGEOIS Isabelle","pts":500,"sexe":"M","cat":"","equipe":6,"actif":true,"note":""},{"id":"bourgeois-pascal","nom":"BOURGEOIS Pascal","pts":500,"sexe":"M","cat":"","equipe":6,"actif":true,"note":""},{"id":"cuenca-gabin","nom":"CUENCA Gabin","pts":500,"sexe":"M","cat":"","equipe":0,"actif":true,"note":"Équipe Jeunes — pas de calendrier fourni"},{"id":"tisserand-henri","nom":"TISSERAND Henri","pts":500,"sexe":"M","cat":"","equipe":0,"actif":true,"note":"Équipe Jeunes — pas de calendrier fourni"},{"id":"radicchi-enzo","nom":"RADICCHI Enzo","pts":500,"sexe":"M","cat":"","equipe":0,"actif":true,"note":"Équipe Jeunes — pas de calendrier fourni"},{"id":"castanier-timeo","nom":"CASTANIER Timéo","pts":500,"sexe":"M","cat":"","equipe":6,"actif":true,"note":""},{"id":"gomez-issa","nom":"GOMEZ Issa","pts":500,"sexe":"M","cat":"","equipe":0,"actif":true,"note":"Équipe Jeunes — pas de calendrier fourni"},{"id":"savonnet-raphael","nom":"SAVONNET Raphaël","pts":500,"sexe":"M","cat":"","equipe":0,"actif":true,"note":"Équipe Jeunes — pas de calendrier fourni"},{"id":"lombard-yves","nom":"LOMBARD Yves","pts":836,"sexe":"M","cat":"","equipe":0,"actif":true,"note":"Réserviste"},{"id":"di-pietro-charlotte","nom":"DI PIETRO Charlotte","pts":772,"sexe":"F","cat":"","equipe":0,"actif":true,"note":"Réserviste"},{"id":"le-strat-pierre","nom":"LE STRAT Pierre","pts":621,"sexe":"M","cat":"","equipe":0,"actif":true,"note":"Réserviste"},{"id":"capelli-jean-claude","nom":"CAPELLI Jean Claude","pts":829,"sexe":"M","cat":"","equipe":0,"actif":false,"note":"Statut à vérifier"},{"id":"herren-daniel","nom":"HERREN Daniel","pts":559,"sexe":"M","cat":"","equipe":0,"actif":false,"note":"Statut à vérifier"},{"id":"meister-maxime","nom":"MEISTER Maxime","pts":500,"sexe":"M","cat":"","equipe":6,"actif":true,"note":""},{"id":"deram-martin","nom":"DERAM Martin","pts":500,"sexe":"M","cat":"","equipe":0,"actif":true,"note":"Équipe Jeunes — pas de calendrier fourni"}]};
+
+/* ============================================================
+   TT Seloncourt — Compositions d'équipes
+   État, règles FFTT, rendu
+   ============================================================ */
+const LOGO = "data:image/jpeg;base64,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";
+const KEY = "estc_compos_v1";
+const PINKEY = "estc_compos_pin";
+const NJ = 7;
+const PIN = "2026";
+const SUPA = {
+  projectId: "tt-seloncourt",
+  apiKey: "AIzaSyCJ3oc1moEzk351vE8hmZrL65j2b1pmGm4",
+  collection: "compos_seloncourt",
+  id: "main"
+};
+// URL du document Firestore (API REST v1) — un seul document, dont tout l'état
+// de l'outil est stocké en une seule fois dans un champ "data" (JSON en texte),
+// comme c'était le cas avec la colonne jsonb de Supabase.
+const FIRE_URL = () => "https://firestore.googleapis.com/v1/projects/"+SUPA.projectId+
+  "/databases/(default)/documents/"+SUPA.collection+"/"+SUPA.id+"?key="+SUPA.apiKey;
+
+/* ---------- état ---------- */
+function emptyPhase(){
+  return { journees: Array.from({length:NJ}, (_,i)=>({n:i+1, date:""})), absences:{}, compos:{}, cal:{} };
+}
+function blankCal(e){
+  return Array.from({length:NJ},(_,i)=>({j:i+1,date:"",dom:true,adv:"",jour:e.jour,heure:e.heure,lieu:e.salle}));
+}
+function seedCal(){
+  const c = {};
+  SEED.equipes.forEach(e=>{ c[e.num] = JSON.parse(JSON.stringify(e.cal || blankCal(e))); });
+  return c;
+}
+function fresh(){
+  return {
+    saison: SEED.saison,
+    phase: "1",
+    equipes: JSON.parse(JSON.stringify(SEED.equipes)),
+    joueurs: JSON.parse(JSON.stringify(SEED.joueurs)),
+    phases: { "1": Object.assign(emptyPhase(), {cal: seedCal()}), "2": emptyPhase() },
+    ui: { j:1, tab:"compo" }
+  };
+}
+let S = fresh();
+let storageOK = true;
+
+let syncState = "loading", remoteStamp = null, dirty = false, pushTimer = null;
+
+/* écriture locale seule (navigation, préférences d'affichage) */
+function saveUI(){
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){ storageOK = false; }
+}
+/* écriture locale + synchronisation différée */
+function save(){
+  saveUI();
+  if(!canEdit()) return;
+  dirty = true; setSync("pending");
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(push, 1500);
+}
+function setSync(st){
+  syncState = st;
+  const el = document.getElementById("saveDot");
+  if(!el) return;
+  const lab = { ok:"Synchronisé", pending:"Enregistrement…", offline:"Hors ligne — copie locale", loading:"Connexion…" };
+  el.className = "save-dot " + st;
+  el.querySelector("span").textContent = lab[st] + (storageOK ? "" : " (stockage local bloqué)");
+}
+async function push(){
+  const stamp = new Date().toISOString();
+  const body = JSON.stringify({
+    fields: {
+      data: { stringValue: JSON.stringify(S) },
+      updated_at: { stringValue: stamp }
+    }
+  });
+  try{
+    const r = await fetch(FIRE_URL(), {
+      method:"PATCH",
+      headers: { "Content-Type":"application/json" },
+      body
+    });
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    remoteStamp = stamp; dirty = false; setSync("ok");
+  }catch(e){
+    setSync("offline");
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(push, 15000);
+  }
+}
+async function pull(){
+  const r = await fetch(FIRE_URL());
+  if(r.status === 404) return null; // document pas encore créé côté Firestore
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  const doc = await r.json();
+  const f = doc.fields || {};
+  if(!f.data) return null;
+  return { data: JSON.parse(f.data.stringValue), updated_at: f.updated_at ? f.updated_at.stringValue : null };
+}
+/* relecture périodique : récupère les modifications faites ailleurs */
+async function poll(){
+  if(dirty || document.hidden) return;
+  try{
+    const row = await pull();
+    if(row && row.updated_at && row.updated_at !== remoteStamp && hasRealData(row.data)){
+      S = migrate(row.data); remoteStamp = row.updated_at; saveUI();
+      refreshUI(); toast("Compositions mises à jour depuis un autre appareil");
+    }
+    if(syncState === "offline") setSync("ok");
+  }catch(e){ setSync("offline"); }
+}
+function migrate(d){
+  d.ui = d.ui || {j:1,tab:"compo"};
+  d.saison = d.saison || SEED.saison;
+  d.phase = d.phase || "1";
+  d.equipes = d.equipes || JSON.parse(JSON.stringify(SEED.equipes));
+  d.joueurs = d.joueurs || JSON.parse(JSON.stringify(SEED.joueurs));
+  d.phases = d.phases || {};
+  ["1","2"].forEach(p=>{
+    const hadCal = !!(d.phases[p] && d.phases[p].cal && Object.keys(d.phases[p].cal).length);
+    d.phases[p] = d.phases[p] || emptyPhase();
+    d.phases[p].absences = d.phases[p].absences || {};
+    d.phases[p].compos = d.phases[p].compos || {};
+    if(!d.phases[p].journees || d.phases[p].journees.length!==NJ) d.phases[p].journees = emptyPhase().journees;
+    if(!hadCal) d.phases[p].cal = (p==="1") ? seedCal() : {};
+  });
+  d.equipes.forEach(e=>{
+    e.poule = e.poule||""; e.effectif = e.effectif||[];
+    ["1","2"].forEach(ph=>{ if(!d.phases[ph].cal[e.num]) d.phases[ph].cal[e.num] = blankCal(e); });
+  });
+  return d;
+}
+/* une charge utile est "réelle" si elle contient au moins un joueur ; {} ou {ui:...} ne comptent pas */
+function hasRealData(d){
+  return !!(d && Array.isArray(d.joueurs) && d.joueurs.length > 0);
+}
+function loadCache(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if(raw){ const d = JSON.parse(raw); if(d && d.joueurs && d.equipes) S = migrate(d); }
+    localStorage.setItem(KEY+"_probe","1"); localStorage.removeItem(KEY+"_probe");
+  } catch(e){ storageOK = false; }
+}
+/* verrouillage */
+function canEdit(){
+  try{
+    const v = JSON.parse(localStorage.getItem(PINKEY)||"null");
+    return !!(v && v.until > Date.now());
+  }catch(e){ return false; }
+}
+function unlock(){
+  const v = prompt("Code du comité pour modifier les compositions");
+  if(v === null) return;
+  if(v.trim() !== PIN) return toast("Code incorrect");
+  try{ localStorage.setItem(PINKEY, JSON.stringify({until: Date.now()+12*3600*1000})); }catch(e){}
+  lockUI(); toast("Modification activée pour 12 heures");
+  go(S.ui.tab);
+}
+function relock(){
+  try{ localStorage.removeItem(PINKEY); }catch(e){}
+  lockUI(); go(S.ui.tab); toast("Outil verrouillé");
+}
+/* applique le mode lecture seule aux zones de saisie */
+function lockUI(){
+  const ed = canEdit();
+  document.body.classList.toggle("ro", !ed);
+  const b = document.getElementById("btnLock");
+  if(b) b.textContent = ed ? "Verrouiller" : "Déverrouiller";
+  const ban = document.getElementById("roBanner");
+  if(ban) ban.style.display = ed ? "none" : "flex";
+  ["teamGrid","absTable","joueursTable","teamsTable","calEdit"].forEach(id=>{
+    const box = document.getElementById(id); if(!box) return;
+    box.querySelectorAll("input,select,button").forEach(el=>{ el.disabled = !ed; });
+  });
+}
+function refreshUI(){
+  const s = document.getElementById("inSaison"); if(s) s.value = S.saison;
+  const ph = document.getElementById("inPhase"); if(ph) ph.value = S.phase;
+  go(S.ui.tab || "compo");
+}
+
+
+/* ---------- accès ---------- */
+const P  = () => S.phases[S.phase];
+const JD = () => P().journees;
+const pById = id => S.joueurs.find(p=>p.id===id);
+const tByNum = n => S.equipes.find(e=>e.num===+n);
+// couleur attribuée à chaque équipe (répartition par angle d'or -> teintes bien distinctes,
+// fonctionne pour n'importe quel numéro d'équipe, y compris ceux ajoutés ensuite)
+function teamColor(num){
+  num = +num || 0;
+  if(!num) return { bg:"#eef1f5", fg:"#667085", dot:"#98a2b3" };
+  const hue = Math.round((num * 137.508) % 360);
+  return {
+    bg: "hsl("+hue+" 68% 93%)",
+    fg: "hsl("+hue+" 48% 30%)",
+    dot: "hsl("+hue+" 62% 46%)"
+  };
+}
+function pchip(id){
+  const p = pById(id); if(!p) return "?";
+  const c = teamColor(p.equipe);
+  return "<span class='pchip' style='background:"+c.bg+";color:"+c.fg+"'>"+short(p.nom)+"</span>";
+}
+const pname = id => { const p=pById(id); return p? p.nom : "?"; };
+const short = nom => {
+  const parts = nom.split(" ");
+  if(parts.length<2) return nom;
+  const prenom = parts.slice(1).join(" ");
+  return parts[0] + " " + prenom;
+};
+function compoOf(j, num){
+  const c = P().compos; c[j] = c[j] || {};
+  const e = tByNum(num);
+  let arr = c[j][num] || [];
+  arr = arr.slice(0, e.nb);
+  while(arr.length < e.nb) arr.push(null);
+  c[j][num] = arr;
+  return arr;
+}
+function calOf(num, j){
+  const c = P().cal; const e = tByNum(num);
+  if(!c[num]) c[num] = blankCal(e);
+  return c[num][j-1] || {j, date:"", dom:true, adv:"", jour:e.jour, heure:e.heure, lieu:e.salle};
+}
+function dLong(iso){
+  if(!iso) return "";
+  const s = new Date(iso).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+  return s.charAt(0).toUpperCase()+s.slice(1);
+}
+function dShort(iso){
+  if(!iso) return "—";
+  const s = new Date(iso).toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"});
+  return s.replace(".","");
+}
+// libellés de rencontre partagés par l'écran et l'image
+function matchAdv(num, j){
+  const c = calOf(num,j);
+  if(c.adv === "EXEMPT") return "Exempt — pas de match cette journée";
+  if(!c.adv) return "Adversaire à renseigner";
+  return (c.dom ? "Reçoit " : "Déplacement à ") + c.adv;
+}
+function matchWhen(num, j){
+  const c = calOf(num,j), e = tByNum(num);
+  if(c.adv === "EXEMPT") return c.date ? dLong(c.date) : "";
+  const parts = [];
+  if(c.date) parts.push(dLong(c.date)); else parts.push(c.jour||e.jour);
+  parts.push(c.heure||e.heure);
+  if(c.dom) parts.push(c.lieu||e.salle);
+  return parts.filter(Boolean).join("  ·  ");
+}
+// week-end de la journée : dates distinctes de toutes les équipes
+function journeeLabel(j){
+  const ds = [...new Set(S.equipes.map(e=>calOf(e.num,j).date).filter(Boolean))].sort();
+  if(!ds.length) return "dates à renseigner";
+  if(ds.length===1) return dLong(ds[0]);
+  const a = new Date(ds[0]), b = new Date(ds[ds.length-1]);
+  const mA = a.toLocaleDateString("fr-FR",{month:"long"}), mB = b.toLocaleDateString("fr-FR",{month:"long"});
+  return "Week-end du " + a.getDate() + (mA===mB ? "" : " "+mA) + " et " + b.getDate() + " " + mB + " " + b.getFullYear();
+}
+/* ---------- absences ----------
+   Chaque entrée est {id, days}. days est un sous-ensemble de
+   ["Vendredi","Samedi","Dimanche"] : le ou les jours où le joueur est
+   absent. days = les 3 jours -> absent tout le week-end. days = ["Samedi"]
+   -> absent seulement le samedi, disponible les autres jours de la même
+   journée de championnat (ex. pour une autre équipe qui joue le
+   dimanche). Rétro-compatible : une ancienne sauvegarde stockait soit
+   directement l'identifiant du joueur (= absent tout le week-end), soit
+   {id, day} avec day=null (tout le week-end) ou un jour unique. */
+const DAYS = ["Vendredi","Samedi","Dimanche"];
+function absSet(j){ P().absences[j] = P().absences[j] || []; return P().absences[j]; }
+function absNormalize(e){
+  if(typeof e === "string") return {id:e, days:DAYS.slice()};
+  if(e.days) return {id:e.id, days:e.days.slice()};
+  return {id:e.id, days: e.day==null ? DAYS.slice() : [e.day]}; // ancien format {id,day}
+}
+function absEntryFor(id, j){
+  const found = absSet(j).map(absNormalize).find(e=>e.id===id);
+  return found || null;
+}
+function setAbsence(id, j, days){ // days = tableau de jours (non vide) ; days vide/undefined -> disponible
+  const arr = absSet(j).map(absNormalize).filter(e=>e.id!==id);
+  if(days && days.length) arr.push({id, days:days.slice()});
+  P().absences[j] = arr;
+}
+// num optionnel : si fourni, ne considère l'absence que si elle couvre le jour où CETTE équipe joue.
+function isAbsent(id, j, num){
+  const e = absEntryFor(id, j);
+  if(!e || !e.days.length) return false;
+  if(num == null) return true; // pas de contexte d'équipe : on signale toute absence, même partielle
+  const c = calOf(num, j);
+  if(!c.jour) return true; // jour du match inconnu -> prudence, on bloque
+  return e.days.includes(c.jour);
+}
+function absLabel(id, j){
+  const e = absEntryFor(id, j);
+  if(!e || !e.days.length) return "";
+  if(e.days.length >= DAYS.length) return "absent tout le week-end";
+  return "absent le "+e.days.map(d=>d.toLowerCase()).join(" et ");
+}
+
+/* ---------- règles FFTT ---------- */
+// équipes dans lesquelles le joueur a figuré sur les journées strictement antérieures
+function playedTeams(id, beforeJ){
+  const out = [];
+  for(let j=1;j<beforeJ;j++){
+    const cj = P().compos[j]; if(!cj) continue;
+    for(const num in cj){ if((cj[num]||[]).includes(id)) out.push(+num); }
+  }
+  return out;
+}
+// niveau de brûlage : 2e plus petit numéro d'équipe jouée. null = pas encore brûlé
+function burnLevel(id, beforeJ){
+  const t = playedTeams(id, beforeJ).sort((a,b)=>a-b);
+  return t.length >= 2 ? t[1] : null;
+}
+function teamOfPlayerOnJournee(id, j, exceptNum){
+  const cj = P().compos[j]; if(!cj) return null;
+  for(const num in cj){ if(+num!==+exceptNum && (cj[num]||[]).includes(id)) return +num; }
+  return null;
+}
+// deux équipes du club dans la même poule
+function poulePartners(num){
+  const e = tByNum(num); if(!e || !e.poule.trim()) return [];
+  return S.equipes.filter(x=>x.num!==e.num && x.poule.trim() && x.poule.trim().toLowerCase()===e.poule.trim().toLowerCase()).map(x=>x.num);
+}
+// classement minimum exigé par le club selon la division de l'équipe
+const MIN_PTS_BY_DIV = [
+  { match:/^Pr[ée]nationale\b/i, min:1300, label:"Prénationale" },
+  { match:/^R[ée]gionale\s*1(?!\d)/i, min:1100, label:"Régionale 1" }
+];
+function divMinPoints(e){
+  const d = (e && e.div) || "";
+  const r = MIN_PTS_BY_DIV.find(r=>r.match.test(d));
+  return r || null;
+}
+// éligibilité d'un joueur pour une équipe sur une journée
+function eligibility(id, num, j){
+  if(isAbsent(id,j,num)) return {ok:false, why:absLabel(id,j)};
+  const other = teamOfPlayerOnJournee(id, j, num);
+  if(other) return {ok:false, why:"déjà aligné en équipe "+other};
+  const bl = burnLevel(id, j);
+  if(bl !== null && num > bl) return {ok:false, why:"brûlé — limité à l'équipe "+bl};
+  for(const pn of poulePartners(num)){
+    if(playedTeams(id, j+1).includes(pn)) return {ok:false, why:"a joué en équipe "+pn+", même poule"};
+  }
+  const p = pById(id);
+  const dm = divMinPoints(tByNum(num));
+  if(dm && p && p.pts < dm.min) return {ok:false, why:"minimum "+dm.min+" pts requis en "+dm.label};
+  if(p && !p.actif) return {ok:true, warn:"non engagé cette saison"};
+  return {ok:true};
+}
+// contrôles au niveau de l'équipe
+function teamIssues(num, j){
+  const e = tByNum(num), compo = compoOf(j,num), out = [];
+  const filled = compo.filter(Boolean);
+  const missing = e.nb - filled.length;
+  if(missing>0) out.push({lvl:"bad", txt: missing===1 ? "Il manque 1 joueur" : "Il manque "+missing+" joueurs"});
+  const dup = filled.filter((v,i)=>filled.indexOf(v)!==i);
+  if(dup.length) out.push({lvl:"bad", txt:"Joueur en double : "+dup.map(pname).join(", ")});
+  filled.forEach(id=>{
+    const el = eligibility(id, num, j);
+    if(!el.ok) out.push({lvl:"bad", txt: short(pname(id))+" : "+el.why});
+    else if(el.warn) out.push({lvl:"warn", txt: short(pname(id))+" : "+el.warn});
+  });
+  // règle de la 2e journée
+  if(j===2){
+    const max = e.nb<=4 ? 1 : 2;
+    const desc = filled.filter(id => playedTeams(id,2).some(t=>t<num));
+    if(desc.length>max){
+      out.push({lvl:"bad", txt:"Règle de la 2e journée : "+desc.length+" joueurs venant d'une équipe supérieure ("+desc.map(x=>short(pname(x))).join(", ")+"), maximum "+max});
+    }
+  }
+  // brûlage provoqué par cette composition
+  filled.forEach(id=>{
+    const after = playedTeams(id, j+1).sort((a,b)=>a-b);
+    if(after.length>=2){
+      const niv = after[1];
+      const home = pById(id)?.equipe || 0;
+      if(home && niv < home)
+        out.push({lvl:"warn", txt: short(pname(id))+" est brûlé au niveau de l'équipe "+niv+" : il ne pourra plus jouer en équipe "+home});
+    }
+  });
+  // absents de l'effectif
+  const abs = e.effectif.filter(id=>isAbsent(id,j,num));
+  if(abs.length) out.push({lvl:"info", txt:"Absents de l'effectif : "+abs.map(x=>short(pname(x))+" ("+absLabel(x,j)+")").join(", ")});
+  return out;
+}
+const teamComplete = (num,j) => compoOf(j,num).filter(Boolean).length === tByNum(num).nb
+  && !teamIssues(num,j).some(i=>i.lvl==="bad");
+
+/* ---------- utilitaires ---------- */
+function sortCompo(j,num){
+  const arr = compoOf(j,num).filter(Boolean);
+  arr.sort((a,b)=> (pById(b)?.pts||0)-(pById(a)?.pts||0));
+  while(arr.length < tByNum(num).nb) arr.push(null);
+  P().compos[j][num] = arr;
+}
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove("on"), 2200);
+}
+
+/* ============================================================
+   VUE COMPOSITIONS
+   ============================================================ */
+function renderJdays(){
+  const box = document.getElementById("jdays"); box.innerHTML = "";
+  JD().forEach(jd=>{
+    const done = S.equipes.every(e=>teamComplete(e.num, jd.n));
+    const b = document.createElement("button");
+    b.className = "jday" + (jd.n===S.ui.j ? " on" : (done ? " done" : ""));
+    const ds = [...new Set(S.equipes.map(e=>calOf(e.num,jd.n).date).filter(Boolean))].sort();
+    b.innerHTML = "J"+jd.n+"<small>"+(ds.length ? fmtDate(ds[0])+(ds.length>1?"–"+fmtDate(ds[ds.length-1]):"") : (done?"complète":"—"))+"</small>";
+    b.onclick = ()=>{ S.ui.j = jd.n; saveUI(); renderCompo(); };
+    box.appendChild(b);
+  });
+}
+function fmtDate(d){
+  if(!d) return "";
+  const p = d.split("-"); if(p.length!==3) return d;
+  return p[2]+"/"+p[1];
+}
+function renderCompo(){
+  const j = S.ui.j;
+  document.getElementById("compoSub").textContent =
+    "Phase "+S.phase+" · Journée "+j+" · "+journeeLabel(j);
+  renderJdays();
+
+  const ok = S.equipes.filter(e=>teamComplete(e.num,j)).length;
+  const st = document.getElementById("compoStatus");
+  st.innerHTML = '<span class="pill '+(ok===S.equipes.length?"ok":"ko")+'">'+ok+" / "+S.equipes.length+" équipes prêtes</span>";
+
+  const grid = document.getElementById("teamGrid"); grid.innerHTML = "";
+  S.equipes.forEach(e=>{
+    const compo = compoOf(j, e.num);
+    const issues = teamIssues(e.num, j);
+    const bad = issues.some(i=>i.lvl==="bad");
+    const card = document.createElement("div");
+    card.className = "team" + (bad ? " ko" : "");
+    const tc = teamColor(e.num);
+    card.style.borderTop = "3px solid "+tc.dot;
+    const total = compo.filter(Boolean).reduce((s,id)=>s+(pById(id)?.pts||0),0);
+    const nf = compo.filter(Boolean).length;
+
+    card.innerHTML =
+      '<div class="team-h"><div class="n" style="background:'+tc.bg+';color:'+tc.fg+'">'+e.num+'</div><div class="t"><b>'+e.div+'</b>'+
+      '<span class="mline">'+matchAdv(e.num,j)+'</span>'+
+      '<span>'+matchWhen(e.num,j)+'</span></div>'+
+      '<span class="pill '+(bad?"ko":"ok")+'">'+(bad?"à revoir":"prête")+'</span></div>'+
+      '<div class="slots"></div>'+
+      (issues.length? '<div class="team-f">'+issues.map(i=>'<div class="note '+i.lvl+'">'+i.txt+'</div>').join("")+'</div>' : "")+
+      '<div class="team-meta"><span>'+nf+" / "+e.nb+' joueurs</span><span>'+(nf?Math.round(total/nf):0)+' pts de moyenne</span></div>';
+
+    const slots = card.querySelector(".slots");
+    for(let k=0;k<e.nb;k++){
+      const cur = compo[k];
+      const row = document.createElement("div"); row.className = "slot";
+      const sel = document.createElement("select");
+      sel.className = cur ? "" : "empty";
+      sel.appendChild(new Option("— joueur "+(k+1)+" —",""));
+      const own=[], oth=[];
+      S.joueurs.forEach(p=>{
+        const el = eligibility(p.id, e.num, j);
+        const isCur = p.id===cur;
+        if(!el.ok && !isCur){
+          (e.effectif.includes(p.id)?own:oth).push({p, dis:true, lab:short(p.nom)+" ("+p.pts+") — "+el.why});
+        } else {
+          (e.effectif.includes(p.id)?own:oth).push({p, dis:false, lab:short(p.nom)+" ("+p.pts+")"+(el.warn?" — "+el.warn:"")});
+        }
+      });
+      const addGroup = (label, list)=>{
+        if(!list.length) return;
+        const g = document.createElement("optgroup"); g.label = label;
+        list.sort((a,b)=>b.p.pts-a.p.pts).forEach(o=>{
+          const opt = new Option(o.lab, o.p.id);
+          opt.disabled = o.dis;
+          if(o.p.id===cur) opt.selected = true;
+          const oc = teamColor(o.p.equipe);
+          opt.style.backgroundColor = oc.bg; opt.style.color = oc.fg;
+          g.appendChild(opt);
+        });
+        sel.appendChild(g);
+      };
+      addGroup("Effectif de l'équipe", own);
+      addGroup("Autres joueurs", oth);
+      sel.value = cur || "";
+      if(cur){
+        const cc = teamColor(pById(cur)?.equipe);
+        sel.style.background = cc.bg; sel.style.color = cc.fg; sel.style.fontWeight = "700";
+      }
+      sel.onchange = ()=>{
+        compoOf(j,e.num)[k] = sel.value || null;
+        sortCompo(j,e.num); save(); renderCompo();
+      };
+      row.innerHTML = '<span class="idx">'+(k+1)+"</span>";
+      row.appendChild(sel);
+      const pts = document.createElement("span"); pts.className="pts";
+      pts.textContent = cur ? (pById(cur)?.pts||"") : "";
+      row.appendChild(pts);
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "slot-del hide-ro";
+      del.title = "Retirer ce joueur";
+      del.setAttribute("aria-label","Retirer ce joueur");
+      del.textContent = "\ud83d\uddd1";
+      del.disabled = !cur;
+      del.onclick = ()=>{
+        compoOf(j,e.num)[k] = null;
+        sortCompo(j,e.num); save(); renderCompo();
+      };
+      row.appendChild(del);
+      slots.appendChild(row);
+    }
+    grid.appendChild(card);
+  });
+  lockUI();
+}
+
+/* auto-remplissage */
+function autoFill(){
+  const j = S.ui.j;
+  // 1er passage : effectif propre à chaque équipe
+  S.equipes.forEach(e=>{
+    const compo = compoOf(j,e.num);
+    const kept = compo.filter(id=>id && eligibility(id,e.num,j).ok);
+    const pool = e.effectif
+      .filter(id=>!kept.includes(id) && eligibility(id,e.num,j).ok)
+      .sort((a,b)=>(pById(b)?.pts||0)-(pById(a)?.pts||0));
+    while(kept.length<e.nb && pool.length) kept.push(pool.shift());
+    while(kept.length<e.nb) kept.push(null);
+    P().compos[j][e.num] = kept;
+  });
+  // 2e passage : renfort depuis les équipes de numéro supérieur
+  S.equipes.forEach(e=>{
+    const compo = compoOf(j,e.num);
+    let need = e.nb - compo.filter(Boolean).length;
+    if(!need) return;
+    const pool = S.joueurs
+      .filter(p=>p.actif && (p.equipe>e.num || p.equipe===0) && eligibility(p.id,e.num,j).ok)
+      .sort((a,b)=>{
+        const da = (a.equipe||99)-e.num, db = (b.equipe||99)-e.num;
+        if(da!==db) return da-db;
+        return b.pts-a.pts;
+      });
+    for(let k=0;k<compo.length && need;k++){
+      if(!compo[k] && pool.length){ compo[k] = pool.shift().id; need--; }
+    }
+    P().compos[j][e.num] = compo;
+  });
+  S.equipes.forEach(e=>sortCompo(j,e.num));
+  save(); renderCompo();
+  toast("Journée "+j+" remplie — vérifiez les alertes");
+}
+
+/* ============================================================
+   VUE ABSENCES
+   ============================================================ */
+function renderAbs(){
+  const f = document.getElementById("absFilter");
+  if(!f.dataset.init){
+    f.innerHTML = '<option value="all">Toutes les équipes</option><option value="0">Sans rattachement</option>' +
+      S.equipes.map(e=>'<option value="'+e.num+'">Équipe '+e.num+" — "+e.div+"</option>").join("");
+    f.dataset.init = "1";
+    f.onchange = renderAbs;
+    document.getElementById("absSearch").oninput = renderAbs;
+  }
+  const filt = f.value, q = (document.getElementById("absSearch").value||"").toLowerCase();
+  const t = document.getElementById("absTable");
+  let html = "<thead><tr><th class='stick'>Joueur</th><th class='c'>Pts</th>" +
+    JD().map(jd=>"<th class='c'>J"+jd.n+(jd.date?"<br><span style='font-weight:500'>"+fmtDate(jd.date)+"</span>":"")+"</th>").join("") +
+    "<th class='c'>Tout</th></tr></thead><tbody>";
+
+  const groups = [];
+  S.equipes.forEach(e=>groups.push({num:e.num, lab:"Équipe "+e.num+" — "+e.div, ids:e.effectif.slice()}));
+  const inTeam = new Set(S.equipes.flatMap(e=>e.effectif));
+  groups.push({num:0, lab:"Sans rattachement", ids:S.joueurs.filter(p=>!inTeam.has(p.id)).map(p=>p.id)});
+
+  groups.forEach(g=>{
+    if(filt!=="all" && String(g.num)!==filt) return;
+    const rows = g.ids.map(pById).filter(Boolean)
+      .filter(p=>!q || p.nom.toLowerCase().includes(q))
+      .sort((a,b)=>b.pts-a.pts);
+    if(!rows.length) return;
+    html += "<tr class='grp'><td class='stick' style='background:var(--navy-l)'>"+g.lab+"</td><td colspan='"+(NJ+2)+"'></td></tr>";
+    rows.forEach(p=>{
+      html += "<tr><td class='stick'>"+pchip(p.id)+(p.actif?"":" <span class='tag'>non engagé</span>")+(p.sexe==="F"?" <span class='tag f'>F</span>":"")+"</td><td class='c'>"+p.pts+"</td>";
+      JD().forEach(jd=>{
+        const e = absEntryFor(p.id, jd.n);
+        const days = e ? e.days : [];
+        html += "<td class='c'><div class='daychecks' data-p='"+p.id+"' data-j='"+jd.n+"'>" +
+          DAYS.map(d=>"<label title='"+d+"'><input type='checkbox' data-day='"+d+"'"+(days.includes(d)?" checked":"")+">"+d[0]+"</label>").join("") +
+          "</div></td>";
+      });
+      const all = JD().every(jd=>{ const e = absEntryFor(p.id, jd.n); return e && e.days.length>=DAYS.length; });
+      html += "<td class='c'><button class='btn sm' data-all='"+p.id+"'>"+(all?"Libérer":"Absent")+"</button></td></tr>";
+    });
+  });
+  t.innerHTML = html + "</tbody>";
+  t.querySelectorAll(".daychecks").forEach(box=>{
+    box.querySelectorAll("input[type=checkbox]").forEach(cb=>{
+      cb.onchange = ()=>{
+        const id = box.dataset.p, j = +box.dataset.j;
+        const e = absEntryFor(id, j);
+        let days = e ? e.days.slice() : [];
+        if(cb.checked){ if(!days.includes(cb.dataset.day)) days.push(cb.dataset.day); }
+        else { days = days.filter(d=>d!==cb.dataset.day); }
+        setAbsence(id, j, days);
+        save(); renderCompo(); renderAbs();
+      };
+    });
+  });
+  t.querySelectorAll("button[data-all]").forEach(b=>{
+    b.onclick = ()=>{
+      const id = b.dataset.all, all = JD().every(jd=>{ const e=absEntryFor(id,jd.n); return e && e.days.length>=DAYS.length; });
+      JD().forEach(jd=> setAbsence(id, jd.n, all ? undefined : DAYS));
+      save(); renderCompo(); renderAbs();
+    };
+  });
+  lockUI();
+}
+
+/* ============================================================
+   VUE RÉCAP
+   ============================================================ */
+function renderRecap(){
+  const totalSlots = S.equipes.reduce((s,e)=>s+e.nb,0)*NJ;
+  let filled=0, complete=0, alerts=0;
+  JD().forEach(jd=>S.equipes.forEach(e=>{
+    filled += compoOf(jd.n,e.num).filter(Boolean).length;
+    if(teamComplete(e.num,jd.n)) complete++;
+    alerts += teamIssues(e.num,jd.n).filter(i=>i.lvl==="bad").length;
+  }));
+  document.getElementById("recapKpis").innerHTML =
+    kpi(complete+" / "+(S.equipes.length*NJ), "compositions prêtes")+
+    kpi(filled+" / "+totalSlots, "places pourvues")+
+    kpi(alerts, "points à corriger")+
+    kpi(S.joueurs.filter(p=>p.actif).length, "joueurs engagés");
+
+  let html = "<thead><tr><th class='stick'>Équipe</th><th>Division</th><th>Rencontre</th>" +
+    JD().map(jd=>"<th class='c'>J"+jd.n+"</th>").join("") + "</tr></thead><tbody>";
+  S.equipes.forEach(e=>{
+    const tc = teamColor(e.num);
+    html += "<tr><td class='stick'><span class='eqchip' style='background:"+tc.bg+";color:"+tc.fg+"'><i class='tdot' style='background:"+tc.dot+"'></i>Équipe "+e.num+"</span></td><td>"+e.div+"</td><td>"+e.jour+" "+e.heure+" · "+e.salle+(e.poule?" · "+e.poule:"")+"</td>";
+    JD().forEach(jd=>{
+      const n = compoOf(jd.n,e.num).filter(Boolean).length;
+      const bad = teamIssues(e.num,jd.n).some(i=>i.lvl==="bad");
+      const cls = n===0 ? "non" : (n===e.nb && !bad ? "ok" : (bad?"ko":"mid"));
+      html += "<td class='c'><span class='cell "+cls+"'>"+(n===e.nb&&!bad ? "OK" : n+"/"+e.nb)+"</span></td>";
+    });
+    html += "</tr>";
+  });
+  document.getElementById("recapTable").innerHTML = html+"</tbody>";
+
+  const mode = document.getElementById("recapJoueurFilter").value;
+  let h2 = "<thead><tr><th class='stick'>Joueur</th><th class='c'>Pts</th><th class='c'>Rencontres</th><th>Équipes jouées</th><th>Autorisé jusqu'à</th>"+
+    JD().map(jd=>"<th class='c'>J"+jd.n+"</th>").join("")+"</tr></thead><tbody>";
+  const list = S.joueurs.slice().sort((a,b)=>b.pts-a.pts);
+  list.forEach(p=>{
+    const teams = playedTeams(p.id, NJ+1);
+    const bl = burnLevel(p.id, NJ+1);
+    if(mode==="played" && !teams.length) return;
+    if(mode==="burn" && bl===null) return;
+    const cnt = {};
+    teams.forEach(t=>cnt[t]=(cnt[t]||0)+1);
+    h2 += "<tr><td class='stick'>"+pchip(p.id)+"</td><td class='c'>"+p.pts+"</td><td class='c'>"+teams.length+"</td>"+
+      "<td>"+(Object.keys(cnt).sort((a,b)=>a-b).map(t=>"Éq."+t+(cnt[t]>1?" ×"+cnt[t]:"")).join(", ")||"—")+"</td>"+
+      "<td>"+(bl===null ? "<span class='tag'>libre</span>" : "<span class='cell "+(bl<= (p.equipe||11) ? "mid":"ok")+"'>équipe "+bl+"</span>")+"</td>";
+    JD().forEach(jd=>{
+      const t = teamOfPlayerOnJournee(p.id, jd.n, -1);
+      const abs = isAbsent(p.id, jd.n);
+      h2 += "<td class='c'>"+(t? "<span class='cell ok'>"+t+"</span>" : (abs? "<span class='cell non'>abs</span>":"·"))+"</td>";
+    });
+    h2 += "</tr>";
+  });
+  document.getElementById("playersRecap").innerHTML = h2+"</tbody>";
+}
+const kpi = (v,l) => '<div class="kpi"><b>'+v+"</b><span>"+l+"</span></div>";
+
+/* ============================================================
+   VUE JOUEURS
+   ============================================================ */
+function renderJoueurs(){
+  const q = (document.getElementById("joueurSearch").value||"").toLowerCase();
+  const st = document.getElementById("joueurStatut").value;
+  const rows = S.joueurs.filter(p=>(!q||p.nom.toLowerCase().includes(q)) &&
+    (st==="all" || (st==="actif")===!!p.actif)).sort((a,b)=>b.pts-a.pts);
+  document.getElementById("joueursCount").textContent = rows.length+" joueurs affichés sur "+S.joueurs.length;
+  let html = "<thead><tr><th class='stick'>Nom</th><th class='c'>Points</th><th class='c'>Sexe</th><th class='c'>Cat.</th><th>Rattachement</th><th class='c'>Engagé</th><th></th></tr></thead><tbody>";
+  rows.forEach(p=>{
+    const tc = teamColor(p.equipe);
+    html += "<tr><td class='stick'><input class='cellin' style='background:"+tc.bg+";color:"+tc.fg+";font-weight:700;border-color:transparent' data-f='nom' data-id='"+p.id+"' value=\""+p.nom.replace(/"/g,"&quot;")+"\"></td>"+
+      "<td class='c'><input class='cellin' style='width:74px;text-align:right' data-f='pts' data-id='"+p.id+"' value='"+p.pts+"'></td>"+
+      "<td class='c'><select class='cellin' data-f='sexe' data-id='"+p.id+"'><option"+(p.sexe==="M"?" selected":"")+">M</option><option"+(p.sexe==="F"?" selected":"")+">F</option></select></td>"+
+      "<td class='c'><input class='cellin' style='width:60px' data-f='cat' data-id='"+p.id+"' value='"+(p.cat||"")+"'></td>"+
+      "<td><select class='cellin' data-f='equipe' data-id='"+p.id+"'><option value='0'>—</option>"+
+        S.equipes.map(e=>"<option value='"+e.num+"'"+(p.equipe===e.num?" selected":"")+">Équipe "+e.num+" — "+e.div+"</option>").join("")+"</select></td>"+
+      "<td class='c'><input type='checkbox' class='chk' data-f='actif' data-id='"+p.id+"'"+(p.actif?" checked":"")+"></td>"+
+      "<td class='c'><button class='btn sm' data-del='"+p.id+"'>Retirer</button></td></tr>";
+  });
+  const t = document.getElementById("joueursTable");
+  t.innerHTML = html+"</tbody>";
+  t.querySelectorAll("[data-f]").forEach(el=>{
+    const h = ()=>{
+      const p = pById(el.dataset.id); if(!p) return;
+      const f = el.dataset.f;
+      if(f==="actif") p.actif = el.checked;
+      else if(f==="pts") p.pts = parseInt(el.value,10)||500;
+      else if(f==="equipe"){
+        const old = p.equipe; p.equipe = +el.value;
+        S.equipes.forEach(e=>{ const i=e.effectif.indexOf(p.id); if(i>=0 && e.num!==p.equipe) e.effectif.splice(i,1); });
+        const ne = tByNum(p.equipe);
+        if(ne && !ne.effectif.includes(p.id)) ne.effectif.push(p.id);
+        if(old!==p.equipe) renderAbs();
+      }
+      else p[f] = el.value;
+      save();
+      if(f==="pts"||f==="equipe") renderJoueurs();
+    };
+    el.onchange = h;
+  });
+  t.querySelectorAll("[data-del]").forEach(b=>{
+    b.onclick = ()=>{
+      const id = b.dataset.del;
+      if(!confirm("Retirer "+pname(id)+" de la liste ?")) return;
+      S.joueurs = S.joueurs.filter(p=>p.id!==id);
+      S.equipes.forEach(e=>{ const i=e.effectif.indexOf(id); if(i>=0) e.effectif.splice(i,1); });
+      ["1","2"].forEach(ph=>{
+        const P2 = S.phases[ph];
+        Object.values(P2.compos).forEach(cj=>Object.keys(cj).forEach(n=>{ cj[n]=cj[n].map(x=>x===id?null:x); }));
+        Object.keys(P2.absences).forEach(j=>{ P2.absences[j]=P2.absences[j].filter(x=>x!==id); });
+      });
+      save(); renderJoueurs(); renderAbs();
+    };
+  });
+  lockUI();
+}
+
+/* ============================================================
+   VUE RÉGLAGES
+   ============================================================ */
+function renderReglages(){
+  let html = "<thead><tr><th>N°</th><th>Division</th><th>Jour</th><th>Heure</th><th>Salle</th><th class='c'>Joueurs</th><th>Poule</th><th class='c'>Effectif</th><th></th></tr></thead><tbody>";
+  S.equipes.forEach(e=>{
+    const tc = teamColor(e.num);
+    html += "<tr><td><span class='eqchip' style='background:"+tc.bg+";color:"+tc.fg+"'><i class='tdot' style='background:"+tc.dot+"'></i>"+e.num+"</span></td>"+
+      ["div","jour","heure","salle"].map(f=>"<td><input class='cellin' data-e='"+e.num+"' data-f='"+f+"' value=\""+(e[f]||"").replace(/"/g,"&quot;")+"\"></td>").join("")+
+      "<td class='c'><select class='cellin' data-e='"+e.num+"' data-f='nb'>"+[3,4,5,6].map(n=>"<option"+(e.nb===n?" selected":"")+">"+n+"</option>").join("")+"</select></td>"+
+      "<td><input class='cellin' style='width:90px' data-e='"+e.num+"' data-f='poule' value=\""+(e.poule||"")+"\" placeholder='ex. 5'></td>"+
+      "<td class='c'>"+e.effectif.length+"</td>"+
+      "<td class='c'><button class='btn sm hide-ro' data-delteam='"+e.num+"'>Retirer</button></td></tr>";
+  });
+  const tt = document.getElementById("teamsTable");
+  tt.innerHTML = html+"</tbody>";
+  tt.querySelectorAll("[data-e]").forEach(el=>{
+    el.onchange = ()=>{
+      const e = tByNum(el.dataset.e), f = el.dataset.f;
+      e[f] = f==="nb" ? +el.value : el.value;
+      save(); renderReglages();
+    };
+  });
+  tt.querySelectorAll("[data-delteam]").forEach(b=>{
+    b.onclick = ()=>removeTeam(+b.dataset.delteam);
+  });
+  lockUI();
+}
+
+/* ---------- ajout / retrait d'équipe en cours de saison ---------- */
+function addTeam(){
+  const nums = S.equipes.map(e=>e.num);
+  const suggestion = nums.length ? Math.max(...nums)+1 : 1;
+  const raw = prompt("Numéro de cette équipe (déterminant pour le brûlage — plus petit = division plus haute) :", String(suggestion));
+  if(raw===null) return;
+  const num = parseInt(raw,10);
+  if(!num || num<1) return toast("Numéro invalide");
+  if(nums.includes(num)) return toast("Le numéro "+num+" est déjà utilisé");
+  const div = prompt("Nom de la division ou de l'équipe (ex. Équipe Jeunes) :", "") || ("Équipe "+num);
+  const nbRaw = prompt("Nombre de joueurs par rencontre (3 à 6) :", "4");
+  const nb = Math.min(6, Math.max(3, parseInt(nbRaw,10) || 4));
+  const jour = prompt("Jour habituel des matches à domicile (optionnel) :", "") || "";
+  const heure = prompt("Heure habituelle (optionnel) :", "") || "";
+  const salleDefaut = (S.equipes[0] && S.equipes[0].salle) || "";
+  const salle = prompt("Salle habituelle :", salleDefaut) || salleDefaut;
+  const e = { num, div, jour, heure, salle, nb, poule:"", effectif:[] };
+  S.equipes.push(e);
+  S.equipes.sort((a,b)=>a.num-b.num);
+  ["1","2"].forEach(ph=>{ S.phases[ph].cal[num] = blankCal(e); });
+  save();
+  renderReglages();
+  toast("Équipe "+num+" ajoutée — pensez à renseigner son calendrier");
+}
+function removeTeam(num){
+  const e = tByNum(num);
+  if(!e) return;
+  if(!confirm("Retirer l'équipe "+num+" (\""+e.div+"\") ? Ses compositions et son calendrier seront supprimés. Les joueurs qui lui étaient rattachés redeviennent sans rattachement.")) return;
+  S.equipes = S.equipes.filter(x=>x.num!==num);
+  S.joueurs.forEach(p=>{ if(p.equipe===num) p.equipe = 0; });
+  ["1","2"].forEach(ph=>{
+    const P2 = S.phases[ph];
+    delete P2.cal[num];
+    Object.keys(P2.compos).forEach(j=>{ if(P2.compos[j][num]) delete P2.compos[j][num]; });
+  });
+  save();
+  renderReglages();
+  renderJoueurs();
+  toast("Équipe "+num+" retirée");
+}
+
+/* ============================================================
+   VUE CALENDRIER
+   ============================================================ */
+function renderCal(){
+  // vue d'ensemble
+  let html = "<thead><tr><th class='stick'>Équipe</th><th>Poule</th>"+
+    JD().map(jd=>"<th class='c'>J"+jd.n+"</th>").join("")+"</tr></thead><tbody>";
+  S.equipes.forEach(e=>{
+    html += "<tr><td class='stick'><b>Éq. "+e.num+"</b> <span class='tag'>"+e.div+"</span></td><td>"+(e.poule||"—")+"</td>";
+    JD().forEach(jd=>{
+      const c = calOf(e.num, jd.n);
+      if(!c.adv){ html += "<td class='c'><span class='cell non'>—</span></td>"; return; }
+      html += "<td class='c' style='white-space:normal;min-width:150px'>"+
+        "<span class='tag "+(c.dom?"j":"")+"'>"+(c.dom?"Domicile":"Extérieur")+"</span><br>"+
+        "<span style='font-weight:700'>"+c.adv+"</span><br>"+
+        "<span style='color:var(--muted);font-size:11.5px'>"+dShort(c.date)+" · "+c.heure+"</span></td>";
+    });
+    html += "</tr>";
+  });
+  document.getElementById("calTable").innerHTML = html+"</tbody>";
+
+  // édition d'une équipe
+  const sel = document.getElementById("calTeam");
+  if(!sel.dataset.init){
+    sel.innerHTML = S.equipes.map(e=>"<option value='"+e.num+"'>Équipe "+e.num+" — "+e.div+"</option>").join("");
+    sel.dataset.init = "1"; sel.onchange = renderCal;
+  }
+  const num = +sel.value;
+  let h2 = "<thead><tr><th>Journée</th><th>Date</th><th>Lieu</th><th>Adversaire</th><th>Heure</th><th>Salle (si domicile)</th></tr></thead><tbody>";
+  JD().forEach(jd=>{
+    const c = calOf(num, jd.n);
+    h2 += "<tr><td><b>J"+jd.n+"</b></td>"+
+      "<td><input type='date' class='cellin' style='width:150px' data-c='"+jd.n+"' data-f='date' value='"+(c.date||"")+"'></td>"+
+      "<td><select class='cellin' data-c='"+jd.n+"' data-f='dom'><option value='1'"+(c.dom?" selected":"")+">Domicile</option><option value='0'"+(!c.dom?" selected":"")+">Extérieur</option></select></td>"+
+      "<td><input class='cellin' style='min-width:210px' data-c='"+jd.n+"' data-f='adv' value=\""+(c.adv||"").replace(/"/g,"&quot;")+"\" placeholder='Nom du club adverse'></td>"+
+      "<td><input class='cellin' style='width:80px' data-c='"+jd.n+"' data-f='heure' value='"+(c.heure||"")+"'></td>"+
+      "<td><input class='cellin' style='width:130px' data-c='"+jd.n+"' data-f='lieu' value='"+(c.lieu||"")+"'></td></tr>";
+  });
+  const t = document.getElementById("calEdit");
+  t.innerHTML = h2+"</tbody>";
+  t.querySelectorAll("[data-c]").forEach(el=>{
+    el.onchange = ()=>{
+      const c = calOf(num, +el.dataset.c), f = el.dataset.f;
+      c[f] = f==="dom" ? el.value==="1" : el.value;
+      if(f==="date" && el.value){
+        const jn = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"][new Date(el.value).getDay()];
+        c.jour = jn.charAt(0).toUpperCase()+jn.slice(1);
+      }
+      save(); renderCal();
+    };
+  });
+  lockUI();
+}
+
+/* ============================================================
+   NAVIGATION + ÉVÉNEMENTS
+   ============================================================ */
+const TABS = [
+  ["compo","Compositions", renderCompo],
+  ["cal","Calendrier", renderCal],
+  ["abs","Absences", renderAbs],
+  ["recap","Récapitulatif", renderRecap],
+  ["joueurs","Joueurs", renderJoueurs],
+  ["reglages","Réglages", renderReglages],
+  ["regles","Règles FFTT", ()=>{}]
+];
+function go(id){
+  S.ui.tab = id; saveUI();
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
+  document.getElementById("v-"+id).classList.add("on");
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.t===id));
+  (TABS.find(t=>t[0]===id)||[])[2]?.();
+  window.scrollTo({top:0});
+}
+async function boot(){
+  loadCache();
+  document.getElementById("brandLogo").src = LOGO;
+  const tb = document.getElementById("tabs");
+  TABS.forEach(([id,lab])=>{
+    const b = document.createElement("button");
+    b.textContent = lab; b.dataset.t = id; b.onclick = ()=>go(id);
+    tb.appendChild(b);
+  });
+  document.getElementById("inSaison").value = S.saison;
+  document.getElementById("inSaison").onchange = e => { S.saison = e.target.value; save(); };
+  const ph = document.getElementById("inPhase");
+  ph.value = S.phase;
+  ph.onchange = e => { S.phase = e.target.value; S.ui.j = 1; saveUI(); go(S.ui.tab); toast("Phase "+S.phase+" — brûlage remis à zéro"); };
+
+  document.getElementById("btnAuto").onclick = autoFill;
+  document.getElementById("btnClear").onclick = ()=>{
+    if(!confirm("Vider toutes les compositions de la journée "+S.ui.j+" ?")) return;
+    P().compos[S.ui.j] = {}; save(); renderCompo();
+  };
+  document.getElementById("btnCopyPrev").onclick = ()=>{
+    const j = S.ui.j; if(j<2) return toast("Aucune journée précédente");
+    const prev = P().compos[j-1] || {};
+    P().compos[j] = JSON.parse(JSON.stringify(prev));
+    S.equipes.forEach(e=>{
+      const arr = compoOf(j,e.num);
+      for(let k=0;k<arr.length;k++) if(arr[k] && !eligibility(arr[k],e.num,j).ok) arr[k]=null;
+    });
+    save(); renderCompo(); toast("Journée "+(j-1)+" reprise — joueurs indisponibles retirés");
+  };
+  document.getElementById("btnAbsClear").onclick = ()=>{
+    if(!confirm("Effacer toutes les absences de la phase "+S.phase+" ?")) return;
+    P().absences = {}; save(); renderAbs();
+  };
+  document.getElementById("recapJoueurFilter").onchange = renderRecap;
+  document.getElementById("joueurSearch").oninput = renderJoueurs;
+  document.getElementById("joueurStatut").onchange = renderJoueurs;
+  document.getElementById("btnAddPlayer").onclick = ()=>{
+    const nom = prompt("Nom du joueur (format : NOM Prénom)");
+    if(!nom) return;
+    const pts = parseInt(prompt("Points officiels","500"),10)||500;
+    const id = nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+    if(pById(id)) return toast("Ce joueur existe déjà");
+    S.joueurs.push({id,nom,pts,sexe:"M",cat:"",equipe:0,actif:true,note:""});
+    save(); renderJoueurs();
+  };
+  document.getElementById("btnAddTeam").onclick = addTeam;
+  document.getElementById("btnSaveJson").onclick = ()=>{
+    const blob = new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Seloncourt_compositions_"+S.saison.replace(/\//g,"-")+"_phase"+S.phase+".json";
+    a.click(); toast("Sauvegarde exportée");
+  };
+  document.getElementById("btnLoadJson").onclick = ()=>document.getElementById("fileJson").click();
+  document.getElementById("fileJson").onchange = e=>{
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{
+      try{
+        const d = JSON.parse(r.result);
+        if(!d.joueurs||!d.equipes) throw 0;
+        S = migrate(d); save(); go(S.ui.tab||"compo");
+        document.getElementById("inSaison").value = S.saison;
+        document.getElementById("inPhase").value = S.phase;
+        toast("Sauvegarde importée");
+      }catch(err){ toast("Fichier illisible"); }
+    };
+    r.readAsText(f); e.target.value="";
+  };
+  document.getElementById("btnResetPhase").onclick = ()=>{
+    if(!confirm("Vider compositions et absences de la phase "+S.phase+" ? Les joueurs et les équipes sont conservés.")) return;
+    S.phases[S.phase] = emptyPhase(); save(); go("compo"); toast("Phase "+S.phase+" vidée");
+  };
+  document.getElementById("btnResetAll").onclick = ()=>{
+    if(!confirm("Tout réinitialiser et repartir des données d'origine ?")) return;
+    S = fresh(); save(); go("compo"); toast("Outil réinitialisé");
+  };
+  document.getElementById("btnExport").onclick = exportImage;
+  document.getElementById("btnModalClose").onclick = ()=>document.getElementById("modal").classList.remove("on");
+  document.getElementById("modal").onclick = e=>{ if(e.target.id==="modal") e.currentTarget.classList.remove("on"); };
+
+  document.getElementById("btnLock").onclick = ()=> canEdit() ? relock() : unlock();
+  document.getElementById("btnUnlock2").onclick = unlock;
+
+  lockUI();
+  setSync("loading");
+  go(S.ui.tab || "compo");
+
+  try{
+    const row = await pull();
+    if(row && hasRealData(row.data)){
+      S = migrate(row.data); remoteStamp = row.updated_at; saveUI();
+      refreshUI();
+    } else if(canEdit()){
+      // le serveur est vide ou ne contient pas encore de données exploitables :
+      // on y dépose l'état local plutôt que d'écraser ce que la personne a déjà saisi
+      await push();
+    }
+    setSync(syncState === "pending" ? "pending" : "ok");
+  }catch(e){
+    setSync("offline");
+  }
+  setInterval(poll, 45000);
+  window.addEventListener("online", poll);
+}
+
+/* ============================================================
+   EXPORT IMAGE — rendu canvas natif, sans dépendance externe
+   ============================================================ */
+const EX = {
+  W: 1080, M: 30, GAP: 16, SCALE: 2,
+  navy:"#0a4a9e", navyD:"#07306a", navyL:"#e8f0fb",
+  ink:"#101828", muted:"#667085", line:"#e2e6ee",
+  warn:"#b45309", warnBg:"#fdf3e3", card:"#ffffff", bg:"#eef2f8"
+};
+const F = (w,s)=> w+" "+s+'px "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+
+function rrect(c,x,y,w,h,r){
+  c.beginPath();
+  c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r);
+  c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath();
+}
+function clip(c,txt,max){
+  if(c.measureText(txt).width<=max) return txt;
+  let t = txt;
+  while(t.length>2 && c.measureText(t+"…").width>max) t = t.slice(0,-1);
+  return t+"…";
+}
+function cardHeight(e){ return 104 + e.nb*36 + 14; }
+
+async function exportImage(){
+  const j = S.ui.j;
+  try{ await document.fonts.ready; }catch(e){}
+
+  const colW = (EX.W - EX.M*2 - EX.GAP)/2;
+  const HEAD = 168, FOOT = 62;
+  const cols = [HEAD+22, HEAD+22];
+  const place = [];
+  S.equipes.forEach(e=>{
+    const ci = cols[0]<=cols[1] ? 0 : 1;
+    const x = EX.M + ci*(colW+EX.GAP);
+    place.push({e, x, y:cols[ci], w:colW, h:cardHeight(e)});
+    cols[ci] += cardHeight(e) + EX.GAP;
+  });
+  const H = Math.max(cols[0],cols[1]) + FOOT;
+
+  const cv = document.createElement("canvas");
+  cv.width = EX.W*EX.SCALE; cv.height = H*EX.SCALE;
+  const c = cv.getContext("2d");
+  c.scale(EX.SCALE, EX.SCALE);
+  c.textBaseline = "alphabetic";
+
+  // fond
+  c.fillStyle = EX.bg; c.fillRect(0,0,EX.W,H);
+
+  // bandeau
+  const g = c.createLinearGradient(0,0,EX.W,HEAD);
+  g.addColorStop(0,EX.navyD); g.addColorStop(1,EX.navy);
+  c.fillStyle = g; c.fillRect(0,0,EX.W,HEAD);
+
+  // logo
+  await new Promise(res=>{
+    const img = new Image();
+    img.onload = ()=>{
+      c.save();
+      c.beginPath(); c.arc(EX.M+46, 84, 46, 0, Math.PI*2); c.closePath();
+      c.fillStyle="#fff"; c.fill(); c.clip();
+      c.drawImage(img, EX.M, 38, 92, 92);
+      c.restore(); res();
+    };
+    img.onerror = res;
+    img.src = LOGO;
+  });
+
+  const tx = EX.M + 112;
+  c.fillStyle = "#9dc0ee"; c.font = F(700,17);
+  c.fillText("Tennis de Table Seloncourt", tx, 58);
+  c.fillStyle = "#fff"; c.font = F(800,38);
+  c.fillText("Compositions · Journée "+j, tx, 100);
+  c.fillStyle = "#b9d0ee"; c.font = F(600,18);
+  c.fillText(journeeLabel(j)+"  ·  Phase "+S.phase+"  ·  "+S.saison, tx, 130);
+
+  // cartes équipes
+  place.forEach(({e,x,y,w,h})=>{
+    const compo = compoOf(j,e.num).filter(Boolean)
+      .sort((a,b)=>(pById(b)?.pts||0)-(pById(a)?.pts||0));
+
+    c.save();
+    c.shadowColor = "rgba(16,24,40,.10)"; c.shadowBlur = 10; c.shadowOffsetY = 3;
+    c.fillStyle = EX.card; rrect(c,x,y,w,h,16); c.fill();
+    c.restore();
+    c.strokeStyle = EX.line; c.lineWidth = 1; rrect(c,x+.5,y+.5,w-1,h-1,16); c.stroke();
+
+    // bandeau latéral
+    c.save(); rrect(c,x,y,w,h,16); c.clip();
+    c.fillStyle = EX.navy; c.fillRect(x,y,5,h); c.restore();
+
+    // numéro
+    c.fillStyle = EX.navyL; rrect(c,x+20,y+18,38,38,11); c.fill();
+    c.fillStyle = EX.navy; c.font = F(800,20); c.textAlign="center";
+    c.fillText(String(e.num), x+39, y+44); c.textAlign="left";
+
+    // titre
+    c.fillStyle = EX.ink; c.font = F(800,21);
+    c.fillText(clip(c,e.div,w-160), x+70, y+38);
+    const cal = calOf(e.num, j);
+    c.fillStyle = cal.adv ? EX.ink : EX.warn; c.font = F(700,15);
+    c.fillText(clip(c, matchAdv(e.num,j), w-92), x+70, y+59);
+    c.fillStyle = EX.muted; c.font = F(600,13.5);
+    c.fillText(clip(c, matchWhen(e.num,j), w-92), x+70, y+78);
+
+    // séparateur
+    c.strokeStyle = EX.line; c.beginPath();
+    c.moveTo(x+20,y+90); c.lineTo(x+w-20,y+90); c.stroke();
+
+    for(let k=0;k<e.nb;k++){
+      const yy = y+104+k*36;
+      const id = compo[k];
+      if(id){
+        const p = pById(id);
+        c.fillStyle = EX.muted; c.font = F(700,12); c.textAlign="center";
+        c.fillText(String(k+1), x+32, yy+21); c.textAlign="left";
+        c.fillStyle = EX.ink; c.font = F(700,18);
+        c.fillText(clip(c, short(p.nom), w-150), x+48, yy+22);
+        c.fillStyle = EX.muted; c.font = F(700,14); c.textAlign="right";
+        c.fillText(p.pts+" pts", x+w-20, yy+22); c.textAlign="left";
+      } else {
+        c.fillStyle = EX.warnBg; rrect(c,x+22,yy+2,w-42,28,9); c.fill();
+        c.fillStyle = EX.warn; c.font = F(700,15);
+        c.fillText("Joueur à confirmer", x+34, yy+22);
+      }
+      if(k<e.nb-1){
+        c.strokeStyle = "#f2f4f7"; c.beginPath();
+        c.moveTo(x+22,yy+31); c.lineTo(x+w-22,yy+31); c.stroke();
+      }
+    }
+  });
+
+  // pied
+  const done = S.equipes.filter(e=>compoOf(j,e.num).filter(Boolean).length===e.nb).length;
+  c.fillStyle = EX.muted; c.font = F(600,15); c.textAlign="center";
+  c.fillText(done+" équipes sur "+S.equipes.length+" au complet  ·  Composition susceptible d'évoluer, prévenez votre capitaine en cas d'imprévu",
+    EX.W/2, H-24);
+  c.textAlign="left";
+
+  const url = cv.toDataURL("image/png");
+  const img = document.getElementById("modalImg");
+  img.src = url;
+  document.getElementById("modal").classList.add("on");
+  document.getElementById("btnModalDl").onclick = ()=>{
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Seloncourt_compositions_J"+j+"_phase"+S.phase+".png";
+    a.click();
+  };
+}
+
+document.addEventListener("DOMContentLoaded", boot);
+
+</script>
+</body>
+</html>
