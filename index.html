@@ -235,7 +235,7 @@ details.rules li{margin-bottom:6px}
 
 <main>
 <div class="robanner" id="roBanner" style="display:none">
-  <span>Lecture seule. Vous pouvez consulter les compositions et exporter l'image ; le code du comité est nécessaire pour modifier.</span>
+  <span>Lecture seule. Vous pouvez consulter les compositions et exporter l'image ; le code du comité ou du capitaine est nécessaire pour modifier.</span>
   <button class="btn sm" id="btnUnlock2">Saisir le code</button>
 </div>
 
@@ -401,7 +401,7 @@ const LOGO = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwU
 const KEY = "estc_compos_v1";
 const PINKEY = "estc_compos_pin";
 const NJ = 7;
-const PIN = "2026";
+const PINS = { comite: "djai1401", capitaine: "capitaine" };
 const SUPA = {
   projectId: "tt-seloncourt",
   apiKey: "AIzaSyCJ3oc1moEzk351vE8hmZrL65j2b1pmGm4",
@@ -537,18 +537,23 @@ function loadCache(){
   } catch(e){ storageOK = false; }
 }
 /* verrouillage */
-function canEdit(){
+function currentRole(){
   try{
     const v = JSON.parse(localStorage.getItem(PINKEY)||"null");
-    return !!(v && v.until > Date.now());
-  }catch(e){ return false; }
+    return (v && v.until > Date.now()) ? (v.role || "comite") : null;
+  }catch(e){ return null; }
 }
+function canEdit(){ return !!currentRole(); }
 function unlock(){
-  const v = prompt("Code du comité pour modifier les compositions");
+  const v = prompt("Code du comité ou du capitaine pour modifier les compositions");
   if(v === null) return;
-  if(v.trim() !== PIN) return toast("Code incorrect");
-  try{ localStorage.setItem(PINKEY, JSON.stringify({until: Date.now()+12*3600*1000})); }catch(e){}
-  lockUI(); toast("Modification activée pour 12 heures");
+  const val = v.trim();
+  let role = null;
+  if(val === PINS.comite) role = "comite";
+  else if(val === PINS.capitaine) role = "capitaine";
+  if(!role) return toast("Code incorrect");
+  try{ localStorage.setItem(PINKEY, JSON.stringify({until: Date.now()+12*3600*1000, role})); }catch(e){}
+  lockUI(); toast("Modification activée pour 12 heures ("+(role==="comite"?"comité":"capitaine")+")");
   go(S.ui.tab);
 }
 function relock(){
