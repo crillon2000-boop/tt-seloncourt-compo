@@ -58,7 +58,11 @@ a{color:var(--navy)}
 .lockbtn:hover{background:rgba(255,255,255,.24)}
 .robanner{background:#fdf3e3;border:1px solid #f4dcb0;color:#8a5a08;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .robanner button{margin-left:auto}
+
+/* Masquer les éléments en fonction du rôle */
 body.ro .hide-ro{display:none !important}
+body.ro-capitaine .hide-capitaine{display:none !important}
+body.ro-equipe .hide-equipe{display:none !important}
 
 nav.tabs{background:var(--navy);position:sticky;top:0;z-index:55;box-shadow:0 2px 8px rgba(10,74,158,.18)}
 nav.tabs .in{max-width:1320px;margin:0 auto;padding:0 10px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
@@ -66,14 +70,32 @@ nav.tabs .in::-webkit-scrollbar{display:none}
 nav.tabs button{background:none;border:0;color:#b9d0ee;padding:12px 15px;font-weight:700;font-size:13.5px;border-bottom:3px solid transparent;white-space:nowrap;transition:color var(--tr),border-color var(--tr);-webkit-tap-highlight-color:transparent}
 nav.tabs button:hover{color:#fff}
 nav.tabs button.on{color:#fff;border-bottom-color:#fff}
-/* masquer les onglets réservés aux modifs en lecture seule */
-body.ro nav.tabs button[data-tab="abs"],
-body.ro nav.tabs button[data-tab="recap"],
-body.ro nav.tabs button[data-tab="joueurs"],
-body.ro nav.tabs button[data-tab="reglages"],
-body.ro nav.tabs button[data-tab="regles"],
+
+/* Masquer les onglets selon le rôle */
+body.ro-capitaine nav.tabs button[data-tab="abs"],
+body.ro-capitaine nav.tabs button[data-tab="recap"],
+body.ro-capitaine nav.tabs button[data-tab="joueurs"],
+body.ro-capitaine nav.tabs button[data-tab="reglages"],
+body.ro-capitaine nav.tabs button[data-tab="regles"],
+body.ro-capitaine nav.tabs button[data-tab="codes"] {
+  display: none !important;
+}
+body.ro-equipe nav.tabs button[data-tab="abs"],
+body.ro-equipe nav.tabs button[data-tab="recap"],
+body.ro-equipe nav.tabs button[data-tab="joueurs"],
+body.ro-equipe nav.tabs button[data-tab="reglages"],
+body.ro-equipe nav.tabs button[data-tab="regles"],
+body.ro-equipe nav.tabs button[data-tab="codes"] {
+  display: none !important;
+}
 body.ro nav.tabs button[data-tab="codes"] {
   display: none !important;
+}
+body.ro-equipe nav.tabs button[data-tab="cal"] {
+  display: inline-block !important;
+}
+body.ro-capitaine nav.tabs button[data-tab="cal"] {
+  display: inline-block !important;
 }
 
 main{max-width:1320px;margin:0 auto;padding:18px 16px 80px}
@@ -92,6 +114,7 @@ h2{font-size:19px;margin:0 0 2px;letter-spacing:-.3px}
 .btn.gho{background:transparent;border-color:transparent;color:var(--muted);box-shadow:none}
 .btn.sm{padding:6px 10px;font-size:12px;border-radius:8px}
 .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.blocked{opacity:.4;cursor:not-allowed}
 .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 
 /* ---------- Journée picker ---------- */
@@ -108,12 +131,17 @@ h2{font-size:19px;margin:0 0 2px;letter-spacing:-.3px}
 .team{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh-1);transition:box-shadow var(--tr),transform var(--tr)}
 .team:hover{box-shadow:var(--sh-2)}
 .team.ko{border-color:#f0c9c5}
+.team.blocked{opacity:.75;border-color:#e2e6ee}
+.team.blocked .slot select,
+.team.blocked .slot-del,
+.team.blocked .slot .pts{opacity:.5;pointer-events:none}
 .team-h{padding:11px 13px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:8px}
 .team-h .n{width:30px;height:30px;border-radius:9px;background:var(--navy-l);color:var(--navy);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
 .team-h .t{flex:1;min-width:0}
 .team-h .t b{display:block;font-size:14.5px;letter-spacing:-.2px}
 .team-h .t span{display:block;font-size:11.5px;color:var(--muted)}
 .team-h .t span.mline{font-size:12.5px;color:var(--ink);font-weight:700;margin-top:1px}
+.team-h .lock-icon{font-size:16px;color:var(--muted);margin-left:6px}
 .pill{font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;white-space:nowrap}
 .pill.ok{background:var(--ok-bg);color:var(--ok)}
 .pill.ko{background:var(--bad-bg);color:var(--bad)}
@@ -166,6 +194,7 @@ body.ro .daychecks label{cursor:default}
 .eqchip{display:inline-flex;align-items:center;padding:2px 9px 2px 7px;border-radius:20px;font-weight:800;font-size:12px}
 input.cellin{border:1px solid var(--line);border-radius:7px;padding:4px 7px;width:100%;min-width:70px}
 input.cellin:focus{outline:2px solid var(--navy-l);border-color:var(--navy)}
+input.cellin:disabled{opacity:.5;cursor:not-allowed}
 
 /* ---------- Misc ---------- */
 .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
@@ -258,7 +287,7 @@ details.rules li{margin-bottom:6px}
 
 <main>
 <div class="robanner" id="roBanner" style="display:none">
-  <span>Lecture seule. Vous pouvez consulter les compositions et exporter l'image ; le code du comité ou du capitaine est nécessaire pour modifier.</span>
+  <span>Lecture seule. Vous pouvez consulter les compositions et exporter l'image ; le code du comité, du capitaine ou d'une équipe est nécessaire pour modifier.</span>
   <button class="btn sm" id="btnUnlock2">Saisir le code</button>
 </div>
 
@@ -280,6 +309,7 @@ details.rules li{margin-bottom:6px}
     <span><b>Grisé</b> = joueur indisponible pour cette équipe</span>
     <span><b>Ordre</b> = classement décroissant, comme sur la feuille de rencontre</span>
     <span><b>Couleur</b> = équipe de rattachement du joueur (chaque équipe a sa couleur)</span>
+    <span id="legendEditMode"></span>
   </div>
 </section>
 
@@ -372,12 +402,12 @@ details.rules li{margin-bottom:6px}
 <!-- ============ CODES ÉQUIPES ============ -->
 <section class="view" id="v-codes">
   <h2>Codes des équipes</h2>
-  <p class="sub">Définissez un code par équipe. Chaque code donne les mêmes droits que le code capitaine. Les codes sont synchronisés en ligne : ils se retrouvent sur tous vos appareils.</p>
+  <p class="sub">Définissez un code par équipe. Chaque code donne les mêmes droits que le code capitaine pour modifier la composition de l'équipe correspondante. Les codes sont synchronisés en ligne.</p>
   
   <div class="panel">
     <div style="margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <button class="btn pri" id="btnGenerateAllCodes">Générer tous les codes</button>
-      <button class="btn" id="btnClearAllCodes">Effacer tous les codes</button>
+      <button class="btn pri hide-ro" id="btnGenerateAllCodes">Générer tous les codes</button>
+      <button class="btn hide-ro" id="btnClearAllCodes">Effacer tous les codes</button>
       <span style="font-size:12px;color:var(--muted);margin-left:auto">Les codes sont synchronisés en ligne via Firestore.</span>
     </div>
     <div id="codesList"></div>
@@ -385,7 +415,7 @@ details.rules li{margin-bottom:6px}
   
   <div class="panel" style="background:var(--navy-l);border-color:var(--navy)">
     <h3 style="color:var(--navy)">Comment utiliser un code équipe ?</h3>
-    <p style="color:var(--navy-d);margin:0">Chaque capitaine peut utiliser le code de son équipe pour déverrouiller l'outil et modifier les compositions. Le code fonctionne comme le code "capitaine" global, mais est propre à chaque équipe. Le code du comité reste le plus puissant.</p>
+    <p style="color:var(--navy-d);margin:0">Chaque capitaine peut utiliser le code de son équipe pour déverrouiller l'outil. Il pourra alors modifier uniquement les compositions et le calendrier, mais seulement pour son équipe dans l'onglet Compositions. Le code "capitaine" permet de modifier toutes les équipes. Le code comité donne un accès complet.</p>
   </div>
 </section>
 
@@ -481,6 +511,8 @@ let S = fresh();
 let storageOK = true;
 
 let syncState = "loading", remoteStamp = null, dirty = false, pushTimer = null;
+let currentRole = null;
+let currentTeamNum = null;
 
 /* ---------- Codes équipes (stockés dans le même document Firestore) ---------- */
 function getTeamCodes(){
@@ -514,7 +546,99 @@ function checkTeamCode(input){
   return null;
 }
 
-/* ---------- Synchronisation Firestore ---------- */
+/* ---------- Gestion des droits ---------- */
+function getCurrentRole(){
+  try{
+    const v = JSON.parse(localStorage.getItem(PINKEY)||"null");
+    if(v && v.until > Date.now()){
+      currentRole = v.role || "comite";
+      currentTeamNum = v.teamNum || null;
+      return currentRole;
+    }
+  }catch(e){}
+  currentRole = null;
+  currentTeamNum = null;
+  return null;
+}
+function canEdit(){ return !!getCurrentRole(); }
+function canEditTeam(teamNum){
+  const role = getCurrentRole();
+  if(!role) return false;
+  if(role === "comite") return true;
+  if(role === "capitaine") return true;
+  if(role === "equipe") {
+    return currentTeamNum === teamNum;
+  }
+  return false;
+}
+function canEditCompo(){ 
+  const role = getCurrentRole();
+  return role === "comite" || role === "capitaine" || role === "equipe";
+}
+function canEditCal(){
+  const role = getCurrentRole();
+  return role === "comite" || role === "capitaine";
+}
+function canEditAll(){
+  const role = getCurrentRole();
+  return role === "comite";
+}
+function unlock(){
+  const v = prompt("Code du comité, du capitaine ou d'une équipe pour modifier les compositions");
+  if(v === null) return;
+  const val = v.trim();
+  let role = null;
+  let teamNum = null;
+  if(val === PINS.comite) { role = "comite"; }
+  else if(val === PINS.capitaine) { role = "capitaine"; }
+  else {
+    const found = checkTeamCode(val);
+    if(found) {
+      role = "equipe";
+      teamNum = found;
+      toast("Code de l'équipe "+teamNum+" reconnu");
+    } else {
+      return toast("Code incorrect");
+    }
+  }
+  try{ 
+    localStorage.setItem(PINKEY, JSON.stringify({
+      until: Date.now()+12*3600*1000, 
+      role: role,
+      teamNum: teamNum
+    })); 
+  }catch(e){}
+  getCurrentRole();
+  lockUI(); 
+  if(role === "comite") toast("Accès complet activé pour 12 heures (comité)");
+  else if(role === "capitaine") toast("Accès capitaine activé pour 12 heures");
+  else if(role === "equipe") toast("Accès équipe "+teamNum+" activé pour 12 heures");
+  go(S.ui.tab);
+}
+function relock(){
+  try{ localStorage.removeItem(PINKEY); }catch(e){}
+  currentRole = null;
+  currentTeamNum = null;
+  lockUI(); go(S.ui.tab); toast("Outil verrouillé");
+}
+function saveUI(){
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){ storageOK = false; }
+}
+function save(){
+  saveUI();
+  if(!canEdit()) return;
+  dirty = true; setSync("pending");
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(push, 1500);
+}
+function setSync(st){
+  syncState = st;
+  const el = document.getElementById("saveDot");
+  if(!el) return;
+  const lab = { ok:"Synchronisé", pending:"Enregistrement…", offline:"Hors ligne — copie locale", loading:"Connexion…" };
+  el.className = "save-dot " + st;
+  el.querySelector("span").textContent = lab[st] + (storageOK ? "" : " (stockage local bloqué)");
+}
 async function push(){
   const stamp = new Date().toISOString();
   const body = JSON.stringify({
@@ -559,7 +683,6 @@ async function poll(){
     if(syncState === "offline") setSync("ok");
   }catch(e){ setSync("offline"); }
 }
-
 function migrate(d){
   d.ui = d.ui || {j:1,tab:"compo"};
   d.saison = d.saison || SEED.saison;
@@ -593,69 +716,52 @@ function loadCache(){
   } catch(e){ storageOK = false; }
 }
 
-/* ---------- verrouillage ---------- */
-function currentRole(){
-  try{
-    const v = JSON.parse(localStorage.getItem(PINKEY)||"null");
-    return (v && v.until > Date.now()) ? (v.role || "comite") : null;
-  }catch(e){ return null; }
-}
-function canEdit(){ return !!currentRole(); }
-function unlock(){
-  const v = prompt("Code du comité, du capitaine ou d'une équipe pour modifier les compositions");
-  if(v === null) return;
-  const val = v.trim();
-  let role = null;
-  if(val === PINS.comite) role = "comite";
-  else if(val === PINS.capitaine) role = "capitaine";
-  else {
-    const teamNum = checkTeamCode(val);
-    if(teamNum) {
-      role = "capitaine";
-      toast("Code de l'équipe "+teamNum+" reconnu");
-    } else {
-      return toast("Code incorrect");
-    }
-  }
-  try{ localStorage.setItem(PINKEY, JSON.stringify({until: Date.now()+12*3600*1000, role})); }catch(e){}
-  lockUI(); 
-  if(role !== "capitaine" || !val) toast("Modification activée pour 12 heures ("+(role==="comite"?"comité":"capitaine")+")");
-  go(S.ui.tab);
-}
-function relock(){
-  try{ localStorage.removeItem(PINKEY); }catch(e){}
-  lockUI(); go(S.ui.tab); toast("Outil verrouillé");
-}
-function saveUI(){
-  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){ storageOK = false; }
-}
-function save(){
-  saveUI();
-  if(!canEdit()) return;
-  dirty = true; setSync("pending");
-  clearTimeout(pushTimer);
-  pushTimer = setTimeout(push, 1500);
-}
-function setSync(st){
-  syncState = st;
-  const el = document.getElementById("saveDot");
-  if(!el) return;
-  const lab = { ok:"Synchronisé", pending:"Enregistrement…", offline:"Hors ligne — copie locale", loading:"Connexion…" };
-  el.className = "save-dot " + st;
-  el.querySelector("span").textContent = lab[st] + (storageOK ? "" : " (stockage local bloqué)");
-}
 function lockUI(){
-  const ed = canEdit();
+  const role = getCurrentRole();
+  const ed = !!role;
+  const isComite = role === "comite";
+  const isCapitaine = role === "capitaine";
+  const isEquipe = role === "equipe";
+  
+  // Classes CSS pour les différents rôles
   document.body.classList.toggle("ro", !ed);
+  document.body.classList.toggle("ro-capitaine", isCapitaine || isEquipe);
+  document.body.classList.toggle("ro-equipe", isEquipe);
+  
   const b = document.getElementById("btnLock");
   if(b) b.textContent = ed ? "Verrouiller" : "Déverrouiller";
+  
   const ban = document.getElementById("roBanner");
   if(ban) ban.style.display = ed ? "none" : "flex";
-  ["teamGrid","absTable","joueursTable","teamsTable","calEdit"].forEach(id=>{
+  
+  // Désactiver les zones de saisie selon les droits
+  const editableAreas = ["teamGrid","absTable","joueursTable","teamsTable","calEdit"];
+  editableAreas.forEach(id=>{
     const box = document.getElementById(id); if(!box) return;
-    box.querySelectorAll("input,select,button").forEach(el=>{ el.disabled = !ed; });
+    box.querySelectorAll("input,select,button").forEach(el=>{
+      // Pour les zones de composition, on gère au cas par cas
+      if(id === "teamGrid") return; // géré dans renderCompo
+      if(id === "calEdit") {
+        el.disabled = !canEditCal();
+        return;
+      }
+      el.disabled = !ed;
+    });
   });
+  
+  // Mettre à jour la légende
+  const legend = document.getElementById("legendEditMode");
+  if(legend){
+    if(isComite) legend.innerHTML = '<span style="color:var(--ok)">🔓 Mode comité — modification de toutes les équipes autorisée</span>';
+    else if(isCapitaine) legend.innerHTML = '<span style="color:var(--ok)">🔓 Mode capitaine — modification de toutes les équipes autorisée</span>';
+    else if(isEquipe) legend.innerHTML = '<span style="color:var(--warn)">🔑 Mode équipe '+currentTeamNum+' — modification de cette équipe uniquement</span>';
+    else legend.innerHTML = '<span style="color:var(--muted)">🔒 Lecture seule — saisissez un code pour modifier</span>';
+  }
+  
+  // Réafficher les équipes bloquées dans la grille
+  renderCompo();
 }
+
 function refreshUI(){
   const s = document.getElementById("inSaison"); if(s) s.value = S.saison;
   const ph = document.getElementById("inPhase"); if(ph) ph.value = S.phase;
@@ -887,34 +993,49 @@ function renderCompo(){
   document.getElementById("compoSub").textContent =
     "Phase "+S.phase+" · Journée "+j+" · "+journeeLabel(j);
   renderJdays();
+  
   const ok = S.equipes.filter(e=>teamComplete(e.num,j)).length;
   const st = document.getElementById("compoStatus");
   st.innerHTML = '<span class="pill '+(ok===S.equipes.length?"ok":"ko")+'">'+ok+" / "+S.equipes.length+" équipes prêtes</span>";
+  
+  const role = getCurrentRole();
   const grid = document.getElementById("teamGrid"); grid.innerHTML = "";
   S.equipes.forEach(e=>{
     const compo = compoOf(j, e.num);
     const issues = teamIssues(e.num, j);
     const bad = issues.some(i=>i.lvl==="bad");
+    const canEdit = canEditTeam(e.num);
+    const isBlocked = !canEdit && !!role;
+    
     const card = document.createElement("div");
-    card.className = "team" + (bad ? " ko" : "");
+    card.className = "team" + (bad ? " ko" : "") + (isBlocked ? " blocked" : "");
     const tc = teamColor(e.num);
     card.style.borderTop = "3px solid "+tc.dot;
     const total = compo.filter(Boolean).reduce((s,id)=>s+(pById(id)?.pts||0),0);
     const nf = compo.filter(Boolean).length;
+    
+    let statusPill = bad ? "à revoir" : "prête";
+    let statusClass = bad ? "ko" : "ok";
+    if(isBlocked){ statusPill = "🔒 lecture seule"; statusClass = "warn"; }
+    
     card.innerHTML =
       '<div class="team-h"><div class="n" style="background:'+tc.bg+';color:'+tc.fg+'">'+e.num+'</div><div class="t"><b>'+e.div+'</b>'+
       '<span class="mline">'+matchAdv(e.num,j)+'</span>'+
       '<span>'+matchWhen(e.num,j)+'</span></div>'+
-      '<span class="pill '+(bad?"ko":"ok")+'">'+(bad?"à revoir":"prête")+'</span></div>'+
+      '<span class="pill '+statusClass+'">'+statusPill+'</span>'+
+      (isBlocked ? ' <span class="lock-icon">🔒</span>' : '')+
+      '</div>'+
       '<div class="slots"></div>'+
-      (issues.length? '<div class="team-f">'+issues.map(i=>'<div class="note '+i.lvl+'">'+i.txt+'</div>').join("")+'</div>' : "")+
+      (issues.length && !isBlocked ? '<div class="team-f">'+issues.map(i=>'<div class="note '+i.lvl+'">'+i.txt+'</div>').join("")+'</div>' : '')+
       '<div class="team-meta"><span>'+nf+" / "+e.nb+' joueurs</span><span>'+(nf?Math.round(total/nf):0)+' pts de moyenne</span></div>';
+    
     const slots = card.querySelector(".slots");
     for(let k=0;k<e.nb;k++){
       const cur = compo[k];
       const row = document.createElement("div"); row.className = "slot";
       const sel = document.createElement("select");
       sel.className = cur ? "" : "empty";
+      sel.disabled = !canEdit;
       sel.appendChild(new Option("— joueur "+(k+1)+" —",""));
       const own=[], oth=[];
       S.joueurs.forEach(p=>{
@@ -947,6 +1068,7 @@ function renderCompo(){
         sel.style.background = cc.bg; sel.style.color = cc.fg; sel.style.fontWeight = "700";
       }
       sel.onchange = ()=>{
+        if(!canEdit) return;
         compoOf(j,e.num)[k] = sel.value || null;
         sortCompo(j,e.num); save(); renderCompo();
       };
@@ -957,12 +1079,13 @@ function renderCompo(){
       row.appendChild(pts);
       const del = document.createElement("button");
       del.type = "button";
-      del.className = "slot-del hide-ro";
+      del.className = "slot-del";
       del.title = "Retirer ce joueur";
       del.setAttribute("aria-label","Retirer ce joueur");
       del.textContent = "\ud83d\uddd1";
-      del.disabled = !cur;
+      del.disabled = !cur || !canEdit;
       del.onclick = ()=>{
+        if(!canEdit) return;
         compoOf(j,e.num)[k] = null;
         sortCompo(j,e.num); save(); renderCompo();
       };
@@ -971,11 +1094,22 @@ function renderCompo(){
     }
     grid.appendChild(card);
   });
+  
+  // Masquer les boutons d'action pour les équipes
+  document.querySelectorAll('.hide-ro, [data-mut]').forEach(el=>{
+    if(el.dataset && el.dataset.mut){
+      const role = getCurrentRole();
+      el.style.display = (role === "comite" || role === "capitaine") ? '' : 'none';
+    }
+  });
+  
   lockUI();
 }
 function autoFill(){
+  if(!canEditCompo()) return toast("Vous n'avez pas les droits pour modifier les compositions");
   const j = S.ui.j;
   S.equipes.forEach(e=>{
+    if(!canEditTeam(e.num)) return;
     const compo = compoOf(j,e.num);
     const kept = compo.filter(id=>id && eligibility(id,e.num,j).ok);
     const pool = e.effectif
@@ -986,6 +1120,7 @@ function autoFill(){
     P().compos[j][e.num] = kept;
   });
   S.equipes.forEach(e=>{
+    if(!canEditTeam(e.num)) return;
     const compo = compoOf(j,e.num);
     let need = e.nb - compo.filter(Boolean).length;
     if(!need) return;
@@ -1001,7 +1136,7 @@ function autoFill(){
     }
     P().compos[j][e.num] = compo;
   });
-  S.equipes.forEach(e=>sortCompo(j,e.num));
+  S.equipes.forEach(e=>{ if(canEditTeam(e.num)) sortCompo(j,e.num); });
   save(); renderCompo();
   toast("Journée "+j+" remplie — vérifiez les alertes");
 }
@@ -1010,6 +1145,7 @@ function autoFill(){
    VUE ABSENCES
    ============================================================ */
 function renderAbs(){
+  if(!canEditAll()) return;
   const f = document.getElementById("absFilter");
   if(!f.dataset.init){
     f.innerHTML = '<option value="all">Toutes les équipes</option><option value="0">Sans rattachement</option>' +
@@ -1075,6 +1211,7 @@ function renderAbs(){
    VUE RÉCAP
    ============================================================ */
 function renderRecap(){
+  if(!canEditAll()) return;
   const totalSlots = S.equipes.reduce((s,e)=>s+e.nb,0)*NJ;
   let filled=0, complete=0, alerts=0;
   JD().forEach(jd=>S.equipes.forEach(e=>{
@@ -1130,6 +1267,7 @@ const kpi = (v,l) => '<div class="kpi"><b>'+v+"</b><span>"+l+"</span></div>";
    VUE JOUEURS
    ============================================================ */
 function renderJoueurs(){
+  if(!canEditAll()) return;
   const q = (document.getElementById("joueurSearch").value||"").toLowerCase();
   const st = document.getElementById("joueurStatut").value;
   const rows = S.joueurs.filter(p=>(!q||p.nom.toLowerCase().includes(q)) &&
@@ -1189,6 +1327,7 @@ function renderJoueurs(){
    VUE RÉGLAGES
    ============================================================ */
 function renderReglages(){
+  if(!canEditAll()) return;
   let html = "<thead><tr><th>N°</th><th>Division</th><th>Jour</th><th>Heure</th><th>Salle</th><th class='c'>Joueurs</th><th>Poule</th><th class='c'>Effectif</th><th></th></tr></thead><tbody>";
   S.equipes.forEach(e=>{
     const tc = teamColor(e.num);
@@ -1197,7 +1336,7 @@ function renderReglages(){
       "<td class='c'><select class='cellin' data-e='"+e.num+"' data-f='nb'>"+[3,4,5,6].map(n=>"<option"+(e.nb===n?" selected":"")+">"+n+"</option>").join("")+"</select></td>"+
       "<td><input class='cellin' style='width:90px' data-e='"+e.num+"' data-f='poule' value=\""+(e.poule||"")+"\" placeholder='ex. 5'></td>"+
       "<td class='c'>"+e.effectif.length+"</td>"+
-      "<td class='c'><button class='btn sm hide-ro' data-delteam='"+e.num+"'>Retirer</button></td></tr>";
+      "<td class='c'><button class='btn sm' data-delteam='"+e.num+"'>Retirer</button></td></tr>";
   });
   const tt = document.getElementById("teamsTable");
   tt.innerHTML = html+"</tbody>";
@@ -1214,6 +1353,7 @@ function renderReglages(){
   lockUI();
 }
 function addTeam(){
+  if(!canEditAll()) return;
   const nums = S.equipes.map(e=>e.num);
   const suggestion = nums.length ? Math.max(...nums)+1 : 1;
   const raw = prompt("Numéro de cette équipe (déterminant pour le brûlage — plus petit = division plus haute) :", String(suggestion));
@@ -1237,6 +1377,7 @@ function addTeam(){
   toast("Équipe "+num+" ajoutée — pensez à renseigner son calendrier");
 }
 function removeTeam(num){
+  if(!canEditAll()) return;
   const e = tByNum(num);
   if(!e) return;
   if(!confirm("Retirer l'équipe "+num+" (\""+e.div+"\") ? Ses compositions et son calendrier seront supprimés. Les joueurs qui lui étaient rattachés redeviennent sans rattachement.")) return;
@@ -1257,6 +1398,11 @@ function removeTeam(num){
    VUE CALENDRIER
    ============================================================ */
 function renderCal(){
+  if(!canEditCal() && !canEditAll()) {
+    // Lecture seule pour les équipes
+    const role = getCurrentRole();
+    if(role !== "equipe") return;
+  }
   let html = "<thead><tr><th class='stick'>Équipe</th><th>Poule</th>"+
     JD().map(jd=>"<th class='c'>J"+jd.n+"</th>").join("")+"</tr></thead><tbody>";
   S.equipes.forEach(e=>{
@@ -1272,35 +1418,39 @@ function renderCal(){
     html += "</tr>";
   });
   document.getElementById("calTable").innerHTML = html+"</tbody>";
+  
   const sel = document.getElementById("calTeam");
   if(!sel.dataset.init){
     sel.innerHTML = S.equipes.map(e=>"<option value='"+e.num+"'>Équipe "+e.num+" — "+e.div+"</option>").join("");
     sel.dataset.init = "1"; sel.onchange = renderCal;
   }
   const num = +sel.value;
+  const canEdit = canEditCal();
   let h2 = "<thead><tr><th>Journée</th><th>Date</th><th>Lieu</th><th>Adversaire</th><th>Heure</th><th>Salle (si domicile)</th></tr></thead><tbody>";
   JD().forEach(jd=>{
     const c = calOf(num, jd.n);
     h2 += "<tr><td><b>J"+jd.n+"</b></td>"+
-      "<td><input type='date' class='cellin' style='width:150px' data-c='"+jd.n+"' data-f='date' value='"+(c.date||"")+"'></td>"+
-      "<td><select class='cellin' data-c='"+jd.n+"' data-f='dom'><option value='1'"+(c.dom?" selected":"")+">Domicile</option><option value='0'"+(!c.dom?" selected":"")+">Extérieur</option></select></td>"+
-      "<td><input class='cellin' style='min-width:210px' data-c='"+jd.n+"' data-f='adv' value=\""+(c.adv||"").replace(/"/g,"&quot;")+"\" placeholder='Nom du club adverse'></td>"+
-      "<td><input class='cellin' style='width:80px' data-c='"+jd.n+"' data-f='heure' value='"+(c.heure||"")+"'></td>"+
-      "<td><input class='cellin' style='width:130px' data-c='"+jd.n+"' data-f='lieu' value='"+(c.lieu||"")+"'></td></tr>";
+      "<td><input type='date' class='cellin' style='width:150px' data-c='"+jd.n+"' data-f='date' value='"+(c.date||"")+"' "+(canEdit?"":"disabled")+"></td>"+
+      "<td><select class='cellin' data-c='"+jd.n+"' data-f='dom' "+(canEdit?"":"disabled")+"><option value='1'"+(c.dom?" selected":"")+">Domicile</option><option value='0'"+(!c.dom?" selected":"")+">Extérieur</option></select></td>"+
+      "<td><input class='cellin' style='min-width:210px' data-c='"+jd.n+"' data-f='adv' value=\""+(c.adv||"").replace(/"/g,"&quot;")+"\" placeholder='Nom du club adverse' "+(canEdit?"":"disabled")+"></td>"+
+      "<td><input class='cellin' style='width:80px' data-c='"+jd.n+"' data-f='heure' value='"+(c.heure||"")+"' "+(canEdit?"":"disabled")+"></td>"+
+      "<td><input class='cellin' style='width:130px' data-c='"+jd.n+"' data-f='lieu' value='"+(c.lieu||"")+"' "+(canEdit?"":"disabled")+"></td></tr>";
   });
   const t = document.getElementById("calEdit");
   t.innerHTML = h2+"</tbody>";
-  t.querySelectorAll("[data-c]").forEach(el=>{
-    el.onchange = ()=>{
-      const c = calOf(num, +el.dataset.c), f = el.dataset.f;
-      c[f] = f==="dom" ? el.value==="1" : el.value;
-      if(f==="date" && el.value){
-        const jn = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"][new Date(el.value).getDay()];
-        c.jour = jn.charAt(0).toUpperCase()+jn.slice(1);
-      }
-      save(); renderCal();
-    };
-  });
+  if(canEdit){
+    t.querySelectorAll("[data-c]").forEach(el=>{
+      el.onchange = ()=>{
+        const c = calOf(num, +el.dataset.c), f = el.dataset.f;
+        c[f] = f==="dom" ? el.value==="1" : el.value;
+        if(f==="date" && el.value){
+          const jn = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"][new Date(el.value).getDay()];
+          c.jour = jn.charAt(0).toUpperCase()+jn.slice(1);
+        }
+        save(); renderCal();
+      };
+    });
+  }
   lockUI();
 }
 
@@ -1308,6 +1458,7 @@ function renderCal(){
    VUE CODES ÉQUIPES
    ============================================================ */
 function renderCodes(){
+  if(!canEditAll()) return;
   const container = document.getElementById("codesList");
   let html = "";
   S.equipes.sort((a,b)=>a.num-b.num).forEach(e=>{
@@ -1343,7 +1494,6 @@ function renderCodes(){
           return;
         }
         setTeamCode(teamNum, code);
-        // Attendre que la sauvegarde soit synchronisée
         const statusSpan = btn.parentElement.querySelector(".code-status");
         statusSpan.className = "code-status saving";
         statusSpan.textContent = "⏳ Synchronisation...";
@@ -1398,6 +1548,16 @@ const TABS = [
   ["regles","Règles FFTT", ()=>{}]
 ];
 function go(id){
+  // Vérifier si l'onglet est accessible
+  const role = getCurrentRole();
+  if(id === "codes" && role !== "comite"){
+    toast("Accès réservé au comité");
+    return;
+  }
+  if((id === "abs" || id === "recap" || id === "joueurs" || id === "reglages" || id === "regles") && role !== "comite"){
+    toast("Accès réservé au comité");
+    return;
+  }
   S.ui.tab = id; saveUI();
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
   document.getElementById("v-"+id).classList.add("on");
@@ -1419,22 +1579,27 @@ async function boot(){
   const ph = document.getElementById("inPhase");
   ph.value = S.phase;
   ph.onchange = e => { S.phase = e.target.value; S.ui.j = 1; saveUI(); go(S.ui.tab); toast("Phase "+S.phase+" — brûlage remis à zéro"); };
+  
   document.getElementById("btnAuto").onclick = autoFill;
   document.getElementById("btnClear").onclick = ()=>{
+    if(!canEditCompo()) return toast("Vous n'avez pas les droits pour modifier les compositions");
     if(!confirm("Vider toutes les compositions de la journée "+S.ui.j+" ?")) return;
     P().compos[S.ui.j] = {}; save(); renderCompo();
   };
   document.getElementById("btnCopyPrev").onclick = ()=>{
+    if(!canEditCompo()) return toast("Vous n'avez pas les droits pour modifier les compositions");
     const j = S.ui.j; if(j<2) return toast("Aucune journée précédente");
     const prev = P().compos[j-1] || {};
     P().compos[j] = JSON.parse(JSON.stringify(prev));
     S.equipes.forEach(e=>{
+      if(!canEditTeam(e.num)) return;
       const arr = compoOf(j,e.num);
       for(let k=0;k<arr.length;k++) if(arr[k] && !eligibility(arr[k],e.num,j).ok) arr[k]=null;
     });
     save(); renderCompo(); toast("Journée "+(j-1)+" reprise — joueurs indisponibles retirés");
   };
   document.getElementById("btnAbsClear").onclick = ()=>{
+    if(!canEditAll()) return toast("Accès réservé au comité");
     if(!confirm("Effacer toutes les absences de la phase "+S.phase+" ?")) return;
     P().absences = {}; save(); renderAbs();
   };
@@ -1442,6 +1607,7 @@ async function boot(){
   document.getElementById("joueurSearch").oninput = renderJoueurs;
   document.getElementById("joueurStatut").onchange = renderJoueurs;
   document.getElementById("btnAddPlayer").onclick = ()=>{
+    if(!canEditAll()) return toast("Accès réservé au comité");
     const nom = prompt("Nom du joueur (format : NOM Prénom)");
     if(!nom) return;
     const pts = parseInt(prompt("Points officiels","500"),10)||500;
@@ -1450,7 +1616,10 @@ async function boot(){
     S.joueurs.push({id,nom,pts,sexe:"M",cat:"",equipe:0,actif:true,note:""});
     save(); renderJoueurs();
   };
-  document.getElementById("btnAddTeam").onclick = addTeam;
+  document.getElementById("btnAddTeam").onclick = ()=>{
+    if(!canEditAll()) return toast("Accès réservé au comité");
+    addTeam();
+  };
   document.getElementById("btnSaveJson").onclick = ()=>{
     const blob = new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
     const a = document.createElement("a");
@@ -1458,7 +1627,10 @@ async function boot(){
     a.download = "Seloncourt_compositions_"+S.saison.replace(/\//g,"-")+"_phase"+S.phase+".json";
     a.click(); toast("Sauvegarde exportée");
   };
-  document.getElementById("btnLoadJson").onclick = ()=>document.getElementById("fileJson").click();
+  document.getElementById("btnLoadJson").onclick = ()=>{
+    if(!canEditAll()) return toast("Accès réservé au comité");
+    document.getElementById("fileJson").click();
+  };
   document.getElementById("fileJson").onchange = e=>{
     const f = e.target.files[0]; if(!f) return;
     const r = new FileReader();
@@ -1475,10 +1647,12 @@ async function boot(){
     r.readAsText(f); e.target.value="";
   };
   document.getElementById("btnResetPhase").onclick = ()=>{
+    if(!canEditAll()) return toast("Accès réservé au comité");
     if(!confirm("Vider compositions et absences de la phase "+S.phase+" ? Les joueurs et les équipes sont conservés.")) return;
     S.phases[S.phase] = emptyPhase(); save(); go("compo"); toast("Phase "+S.phase+" vidée");
   };
   document.getElementById("btnResetAll").onclick = ()=>{
+    if(!canEditAll()) return toast("Accès réservé au comité");
     if(!confirm("Tout réinitialiser et repartir des données d'origine ?")) return;
     S = fresh(); save(); go("compo"); toast("Outil réinitialisé");
   };
@@ -1488,6 +1662,7 @@ async function boot(){
   document.getElementById("btnLock").onclick = ()=> canEdit() ? relock() : unlock();
   document.getElementById("btnUnlock2").onclick = unlock;
   document.getElementById("btnGenerateAllCodes").onclick = async ()=>{
+    if(!canEditAll()) return toast("Accès réservé au comité");
     if(!confirm("Générer un nouveau code pour chaque équipe ? Les codes existants seront remplacés.")) return;
     S.equipes.forEach(e=>{
       const code = generateCode(e.num);
@@ -1498,12 +1673,15 @@ async function boot(){
     toast("Codes générés pour toutes les équipes");
   };
   document.getElementById("btnClearAllCodes").onclick = async ()=>{
+    if(!canEditAll()) return toast("Accès réservé au comité");
     if(!confirm("Effacer tous les codes des équipes ?")) return;
     S.equipes.forEach(e=>setTeamCode(e.num, ""));
     await push();
     renderCodes();
     toast("Tous les codes ont été effacés");
   };
+  
+  getCurrentRole();
   lockUI();
   setSync("loading");
   go(S.ui.tab || "compo");
