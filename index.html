@@ -91,12 +91,6 @@ body.ro-equipe nav.tabs button[data-tab="codes"] {
 body.ro nav.tabs button[data-tab="codes"] {
   display: none !important;
 }
-body.ro-equipe nav.tabs button[data-tab="cal"] {
-  display: inline-block !important;
-}
-body.ro-capitaine nav.tabs button[data-tab="cal"] {
-  display: inline-block !important;
-}
 
 main{max-width:1320px;margin:0 auto;padding:18px 16px 80px}
 .view{display:none}
@@ -114,7 +108,6 @@ h2{font-size:19px;margin:0 0 2px;letter-spacing:-.3px}
 .btn.gho{background:transparent;border-color:transparent;color:var(--muted);box-shadow:none}
 .btn.sm{padding:6px 10px;font-size:12px;border-radius:8px}
 .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
-.btn.blocked{opacity:.4;cursor:not-allowed}
 .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 
 /* ---------- Journée picker ---------- */
@@ -514,7 +507,7 @@ let syncState = "loading", remoteStamp = null, dirty = false, pushTimer = null;
 let currentRole = null;
 let currentTeamNum = null;
 
-/* ---------- Codes équipes (stockés dans le même document Firestore) ---------- */
+/* ---------- Codes équipes ---------- */
 function getTeamCodes(){
   return S.teamCodes || {};
 }
@@ -560,7 +553,10 @@ function getCurrentRole(){
   currentTeamNum = null;
   return null;
 }
-function canEdit(){ return !!getCurrentRole(); }
+function canEdit(){ 
+  const role = getCurrentRole();
+  return !!role; 
+}
 function canEditTeam(teamNum){
   const role = getCurrentRole();
   if(!role) return false;
@@ -583,6 +579,15 @@ function canEditAll(){
   const role = getCurrentRole();
   return role === "comite";
 }
+function canAccessTab(tabId){
+  const role = getCurrentRole();
+  if(!role) return tabId === "compo" || tabId === "cal";
+  if(role === "comite") return true;
+  if(role === "capitaine") return tabId === "compo" || tabId === "cal";
+  if(role === "equipe") return tabId === "compo" || tabId === "cal";
+  return false;
+}
+
 function unlock(){
   const v = prompt("Code du comité, du capitaine ou d'une équipe pour modifier les compositions");
   if(v === null) return;
@@ -723,7 +728,6 @@ function lockUI(){
   const isCapitaine = role === "capitaine";
   const isEquipe = role === "equipe";
   
-  // Classes CSS pour les différents rôles
   document.body.classList.toggle("ro", !ed);
   document.body.classList.toggle("ro-capitaine", isCapitaine || isEquipe);
   document.body.classList.toggle("ro-equipe", isEquipe);
@@ -734,21 +738,6 @@ function lockUI(){
   const ban = document.getElementById("roBanner");
   if(ban) ban.style.display = ed ? "none" : "flex";
   
-  // Désactiver les zones de saisie selon les droits
-  const editableAreas = ["teamGrid","absTable","joueursTable","teamsTable","calEdit"];
-  editableAreas.forEach(id=>{
-    const box = document.getElementById(id); if(!box) return;
-    box.querySelectorAll("input,select,button").forEach(el=>{
-      // Pour les zones de composition, on gère au cas par cas
-      if(id === "teamGrid") return; // géré dans renderCompo
-      if(id === "calEdit") {
-        el.disabled = !canEditCal();
-        return;
-      }
-      el.disabled = !ed;
-    });
-  });
-  
   // Mettre à jour la légende
   const legend = document.getElementById("legendEditMode");
   if(legend){
@@ -757,6 +746,18 @@ function lockUI(){
     else if(isEquipe) legend.innerHTML = '<span style="color:var(--warn)">🔑 Mode équipe '+currentTeamNum+' — modification de cette équipe uniquement</span>';
     else legend.innerHTML = '<span style="color:var(--muted)">🔒 Lecture seule — saisissez un code pour modifier</span>';
   }
+  
+  // Mettre à jour les onglets
+  document.querySelectorAll("#tabs button").forEach(b => {
+    const tab = b.dataset.tab;
+    if(tab === "codes" && role !== "comite") {
+      b.style.display = "none";
+    } else if((tab === "abs" || tab === "recap" || tab === "joueurs" || tab === "reglages" || tab === "regles") && role !== "comite") {
+      b.style.display = "none";
+    } else {
+      b.style.display = "";
+    }
+  });
   
   // Réafficher les équipes bloquées dans la grille
   renderCompo();
@@ -1556,6 +1557,10 @@ function go(id){
   }
   if((id === "abs" || id === "recap" || id === "joueurs" || id === "reglages" || id === "regles") && role !== "comite"){
     toast("Accès réservé au comité");
+    return;
+  }
+  if(!role && (id !== "compo" && id !== "cal")){
+    toast("Veuillez vous identifier pour accéder à cet onglet");
     return;
   }
   S.ui.tab = id; saveUI();
